@@ -8,7 +8,7 @@
  * xsh_hello - Echo one <string> and displays welcome message
  *------------------------------------------------------------------------
  */
-shellcmd xsh_date(int nargs, char *args[])
+shellcmd xsh_hello(int nargs, char *args[])
 {
 
 
