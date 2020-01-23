@@ -1,3 +1,6 @@
+/* in file xsh_hello.c */
+extern shellcmd xsh_hello(int32, char *[]);
+
 /* in file xsh_argecho.c */
 extern	shellcmd  xsh_argecho	(int32, char *[]);
 
