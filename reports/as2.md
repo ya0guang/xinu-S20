@@ -2,43 +2,43 @@
 
 ## Result 
  
-> produced value is: 5 
-> produced value is: 6 
-> produced valueconsumed value is: 7 
-> consumed value is: 7 
-> consumed value is: 7 
-> consumed value is: 7 
-> consumedxsh $  is: 7 
-> produced value is: 8 
-> produced value is: 9 
-> produced value is: 10 
-> produced value  value is: 7 
-> consumed value is: 11 
-> consumed value is: 11 
-> consumed value is: 11 
-> consumed value is: 11 
-> produced value is: 12 
-> produced value is: 13 
-> produced value is: 14 
-> produced value isis: 11 
-> consumed value is: 15 
-> consumed value is: 15 
-> consumed value is: 15 
-> consumed value is: 1: 15 
-> produced value is: 16 
-> produced value is: 17 
-> produced value is: 18 
-> produced value is: 19 5 
-> consumed value is: 19 
-> consumed value is: 19 
-> consumed value is: 19 
-> consumed value is: 19 
-> con
-> produced value is: 20 
-> sumed value is: 19 
-> consumed value is: 20 
-> consumed value is: 20 
-> consumed value is: 20 
+> produced value is: 5  
+> produced value is: 6  
+> produced valueconsumed value is: 7   
+> consumed value is: 7   
+> consumed value is: 7   
+> consumed value is: 7   
+> consumedxsh $  is: 7   
+> produced value is: 8   
+> produced value is: 9   
+> produced value is: 10   
+> produced value  value is: 7   
+> consumed value is: 11   
+> consumed value is: 11   
+> consumed value is: 11   
+> consumed value is: 11   
+> produced value is: 12   
+> produced value is: 13   
+> produced value is: 14   
+> produced value isis: 11   
+> consumed value is: 15   
+> consumed value is: 15   
+> consumed value is: 15   
+> consumed value is: 1: 15   
+> produced value is: 16   
+> produced value is: 17   
+> produced value is: 18   
+> produced value is: 19 5   
+> consumed value is: 19   
+> consumed value is: 19   
+> consumed value is: 19   
+> consumed value is: 19   
+> con  
+> produced value is: 20   
+> sumed value is: 19   
+> consumed value is: 20   
+> consumed value is: 20   
+> consumed value is: 20   
 
 ## Questions to Answer
 
