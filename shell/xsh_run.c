@@ -103,7 +103,7 @@ void prodcons_bb(int nargs, char *args[])
         number[0] = i + 49;
 
         strncpy(consumer_name, consumer_fun_name, 15);
-        strncat(producer_name, number, 2);
+        strncat(consumer_name, number, 2);
 
         resume(create((void *)consumer_bb, 4096, 20, consumer_name, 1, consumer_iter));
     }
