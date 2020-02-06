@@ -82,17 +82,29 @@ void prodcons_bb(int nargs, char *args[])
 
     for(i = 0; i < producer_count; i += 1){
         //create producer thread
-        char producer_name[20] = 0;
-        strncpy(producer_name, producer_fun_name);
-        producer_name[12] = i + 49;
+
+        //generate the string or the process name
+        char producer_name[20];
+        char number[2] = {0};
+        number[0] = i + 49;
+
+        strncpy(producer_name, producer_fun_name, 15);
+        strncat(producer_name, number, 2);
+
         resume(create((void *)producer_bb, 4096, 20, producer_name, 1, producer_iter));
     }
 
     for(i = 0; i < consumer_count; i += 1){
         //create consumer thread
-        char consumer_name[20] = 0;
-        strncpy(consumer_name, consumer_fun_name);
-        consumer_name[12] = i +49;
+
+        //generate the string or the process name
+        char consumer_name[20];
+        char number[2] = {0};
+        number[0] = i + 49;
+
+        strncpy(consumer_name, consumer_fun_name, 15);
+        strncat(producer_name, number, 2);
+
         resume(create((void *)consumer_bb, 4096, 20, consumer_name, 1, consumer_iter));
     }
 
