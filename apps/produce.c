@@ -30,11 +30,14 @@ void producer_bb(int count)
     for (i = 0; i < count; i += 1){
         wait(bb_buf);
         wait(bb_mutex);
+
         bb_array[bb_index_write] = i;
         bb_index_write = (bb_index_write + 1) % STORAGEBUF;
         write_number = bb_number++;
+
         signal(bb_mutex);
         signal(bb_available);
+        
         proc_name = proctab[getpid()].prname;
         printf("Producer: %s, write: %d", proc_name, write_number);
     }

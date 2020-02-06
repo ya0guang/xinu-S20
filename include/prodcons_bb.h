@@ -1,4 +1,4 @@
-#ifndef
+#ifndef STORAGEBUF
 #define STORAGEBUF 200
 #endif
 

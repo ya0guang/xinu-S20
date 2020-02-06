@@ -24,10 +24,15 @@ void consumer_bb(int count)
     for (i = 0; i < count; i += 1){
         wait(bb_available);
         wait(bb_mutex);
+
         read_number = bb_array[bb_index_read];
         bb_index_read = (bb_index_read + 1) % STORAGEBUF;
-        
 
+        signal(bb_mutex);
+        signal(bb_buf);
+        
+        proc_name = proctab[getpid()].prname;
+        printf("Consumer: %s, read: %d", proc_name, read_number);
         }
     }
 }

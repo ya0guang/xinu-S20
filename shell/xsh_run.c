@@ -11,17 +11,13 @@ int bb_index_write;
 int bb_index_read;
 int bb_number = 1;
 
-shellcmd xsh_prodcons(int nargs, char *args[])
+shellcmd xsh_run(int nargs, char *args[])
 {
-    //Argument verifications and validations
-    int count = 2000; //local varible to hold count
 
-    //check args[1] if present assign value to count
-
+    // check if the user wants  to list all avaliable commands
     if ((nargs == 1) || (strncmp(args[1], "list", 5) == 0))
     {
-        printf("my_function_1\n");
-        printf("my_function_2\n");
+        printf("prodcons_bb\n");
         return OK;
     }
 
@@ -31,10 +27,10 @@ shellcmd xsh_prodcons(int nargs, char *args[])
     args++;
     nargs--;
 
-    if (strncmp(args[0], "my_function_1", 13) == 0)
+    if (strncmp(args[0], "prodcons_bb", 11) == 0)
     {
         /* create a process with the function as an entry point. */
-        resume(create((void *)my_function_1, 4096, 20, "my_func_1", 2, nargs, args));
+        resume(create((void *)prodcons_bb, 4096, 20, "prodcons_bb", 2, nargs, args));
     }
 }
 
@@ -80,12 +76,19 @@ void prodcons_bb(int nargs, char *args[])
 
     //create producer and consumer processes and put them in ready queue
     int i;
+    const char producer_fun_name[] = "producer_bb";
+    const char consumer_fun_name[] = "consumer_bb";
+
     for(i = 0; i < producer_count; i += 1){
         //create producer thread
+        char producer_name[20] = strcat(producer_fun_name, itoa(i));
+        resume(create((void *)producer_bb, 4096, 20, producer_name, 1, producer_iter));
     }
 
     for(i = 0; i < consumer_count; i += 1){
         //create consumer thread
+        char consumer_name[20] = strcat(consumer_fun_name, itoa(i));
+        resume(create((void *)consumer_bb, 4096, 20, consumer_name, 1, consumer_iter));
     }
 
     return 0;
