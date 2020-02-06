@@ -18,3 +18,4 @@ extern int bb_number;
 // function prototypes
 void consumer_bb(int count);
 void producer_bb(int count);
+void prodcons_bb(int nargs, char *args[]);

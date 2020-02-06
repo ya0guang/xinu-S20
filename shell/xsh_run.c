@@ -32,6 +32,8 @@ shellcmd xsh_run(int nargs, char *args[])
         /* create a process with the function as an entry point. */
         resume(create((void *)prodcons_bb, 4096, 20, "prodcons_bb", 2, nargs, args));
     }
+    
+    return 0;
 }
 
 void prodcons_bb(int nargs, char *args[])
@@ -81,15 +83,16 @@ void prodcons_bb(int nargs, char *args[])
 
     for(i = 0; i < producer_count; i += 1){
         //create producer thread
-        char producer_name[20] = strcat(producer_fun_name, itoa(i));
+        char producer_name[20];
+        producer_name = strcat(producer_fun_name, itoa(i));
         resume(create((void *)producer_bb, 4096, 20, producer_name, 1, producer_iter));
     }
 
     for(i = 0; i < consumer_count; i += 1){
         //create consumer thread
-        char consumer_name[20] = strcat(consumer_fun_name, itoa(i));
+        char consumer_name[20];
+        consumer_name = strcat(consumer_fun_name, itoa(i));
         resume(create((void *)consumer_bb, 4096, 20, consumer_name, 1, consumer_iter));
     }
 
-    return 0;
 }
