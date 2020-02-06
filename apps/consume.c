@@ -30,9 +30,9 @@ void consumer_bb(int count)
 
         signal(bb_mutex);
         signal(bb_buf);
-        
+
         proc_name = proctab[getpid()].prname;
         printf("Consumer: %s, read: %d", proc_name, read_number);
         }
-    }
+    
 }
