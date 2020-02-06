@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "xinu.h": "c",
+        "conf.h": "c"
+    }
+}

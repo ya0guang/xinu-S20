@@ -1,5 +1,6 @@
 #include <xinu.h>
 #include <prodcons.h>
+#include <prodcons_bb.h>
 
 void producer(int count) {
     
@@ -15,4 +16,9 @@ void producer(int count) {
     }
 }
 
+void producer_bb(int count) {
+  // Iterate from 0 to count and for each iteration add iteration value to the global array `arr_q`, 
+  // print producer process name and written value as,
+  // name : producer_1, write : 8
+}
 
