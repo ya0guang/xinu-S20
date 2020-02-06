@@ -64,8 +64,7 @@ void prodcons_bb(int nargs, char *args[])
     }
 
     //initialize the array
-    const int size = producer_count * producer_iter;
-    int *bb_array = (int *)malloc(size * sizeof(int));
+    //nothing to do here
 
     //create and initialize semaphores to necessary values
     bb_mutex = semcreate(1);
@@ -84,14 +83,16 @@ void prodcons_bb(int nargs, char *args[])
     for(i = 0; i < producer_count; i += 1){
         //create producer thread
         char producer_name[20];
-        producer_name = strcat(producer_fun_name, itoa(i));
+        strcpy(producer_name, producer_fun_name);
+        strcat(producer_name, itoa(i));
         resume(create((void *)producer_bb, 4096, 20, producer_name, 1, producer_iter));
     }
 
     for(i = 0; i < consumer_count; i += 1){
         //create consumer thread
         char consumer_name[20];
-        consumer_name = strcat(consumer_fun_name, itoa(i));
+        strcpy(consumer_name, consumer_fun_name);
+        strcat(consumer_name, itoa(i));
         resume(create((void *)consumer_bb, 4096, 20, consumer_name, 1, consumer_iter));
     }
 
