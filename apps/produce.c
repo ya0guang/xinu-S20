@@ -31,9 +31,9 @@ void producer_bb(int count)
         wait(bb_buf);
         wait(bb_mutex);
 
-        bb_array[bb_index_write] = i;
-        bb_index_write = (bb_index_write + 1) % STORAGEBUF;
         write_number = bb_number++;
+        bb_array[bb_index_write] = write_number;
+        bb_index_write = (bb_index_write + 1) % STORAGEBUF;
 
         proc_name = proctab[getpid()].prname;
         printf("Producer: %s, write: %d\n", proc_name, write_number);
