@@ -11,6 +11,8 @@ int bb_index_write;
 int bb_index_read;
 int bb_number = 1;
 
+//run prodcons_bb 20 10 50 100
+
 shellcmd xsh_run(int nargs, char *args[])
 {
 
@@ -34,6 +36,37 @@ shellcmd xsh_run(int nargs, char *args[])
     }
     
     return 0;
+}
+
+// Generate a string of process name with the seq# of process of the same name
+void gen_proc_name(int proc, int process_seq_num, char* name){
+
+    const char default_fun_name[] = "default";
+    const char producer_fun_name[] = "producer_bb";
+    const char consumer_fun_name[] = "consumer_bb";
+
+    char* function_name;
+
+    char number[3] = {0};
+
+    switch (proc)
+    {
+        // 1 for producer
+    case 1: function_name = producer_fun_name;
+        break;
+        // 2 for consumer
+    case 2: function_name = consumer_fun_name;
+        break;
+    default: function_name = default_fun_name;
+        break;
+    }
+
+    number[0] = process_seq_num / 10;
+    number[1] = process_seq_num % 10;
+
+    strncpy(name, function_name, 20);
+    strncat(name, number, 3);
+    
 }
 
 void prodcons_bb(int nargs, char *args[])
@@ -84,12 +117,8 @@ void prodcons_bb(int nargs, char *args[])
         //create producer thread
 
         //generate the string or the process name
-        char producer_name[20];
-        char number[2] = {0};
-        number[0] = i + 49;
-
-        strncpy(producer_name, producer_fun_name, 15);
-        strncat(producer_name, number, 2);
+        char producer_name[25];
+        gen_proc_name(1, i, producer_name);
 
         resume(create((void *)producer_bb, 4096, 20, producer_name, 1, producer_iter));
     }
@@ -98,12 +127,8 @@ void prodcons_bb(int nargs, char *args[])
         //create consumer thread
 
         //generate the string or the process name
-        char consumer_name[20];
-        char number[2] = {0};
-        number[0] = i + 49;
-
-        strncpy(consumer_name, consumer_fun_name, 15);
-        strncat(consumer_name, number, 2);
+        char consumer_name[25];
+        gen_proc_name(2, i, producer_name);
 
         resume(create((void *)consumer_bb, 4096, 20, consumer_name, 1, consumer_iter));
     }
