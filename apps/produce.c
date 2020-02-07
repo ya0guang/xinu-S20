@@ -35,10 +35,10 @@ void producer_bb(int count)
         bb_index_write = (bb_index_write + 1) % STORAGEBUF;
         write_number = bb_number++;
 
+        proc_name = proctab[getpid()].prname;
+        printf("Producer: %s, write: %d\n", proc_name, write_number);
+
         signal(bb_mutex);
         signal(bb_available);
-        
-        proc_name = proctab[getpid()].prname;
-        printf("Producer: %s, write: %d", proc_name, write_number);
     }
 }
