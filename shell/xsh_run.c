@@ -61,8 +61,8 @@ void gen_proc_name(int proc, int process_seq_num, char* name){
         break;
     }
 
-    number[0] = (process_seq_num / 10) + 49;
-    number[1] = (process_seq_num % 10) + 49;
+    number[0] = (process_seq_num / 10) + 48;
+    number[1] = (process_seq_num % 10) + 48;
 
     strncpy(name, function_name, 20);
     strncat(name, number, 3);
