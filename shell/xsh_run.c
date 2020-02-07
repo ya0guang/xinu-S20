@@ -128,7 +128,7 @@ void prodcons_bb(int nargs, char *args[])
 
         //generate the string or the process name
         char consumer_name[25];
-        gen_proc_name(2, i, producer_name);
+        gen_proc_name(2, i, consumer_name);
 
         resume(create((void *)consumer_bb, 4096, 20, consumer_name, 1, consumer_iter));
     }
