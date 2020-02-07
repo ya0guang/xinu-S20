@@ -61,8 +61,8 @@ void gen_proc_name(int proc, int process_seq_num, char* name){
         break;
     }
 
-    number[0] = process_seq_num / 10;
-    number[1] = process_seq_num % 10;
+    number[0] = (process_seq_num / 10) + 49;
+    number[1] = (process_seq_num % 10) + 49;
 
     strncpy(name, function_name, 20);
     strncat(name, number, 3);
@@ -110,8 +110,6 @@ void prodcons_bb(int nargs, char *args[])
 
     //create producer and consumer processes and put them in ready queue
     int i;
-    const char producer_fun_name[] = "producer_bb";
-    const char consumer_fun_name[] = "consumer_bb";
 
     for(i = 0; i < producer_count; i += 1){
         //create producer thread
