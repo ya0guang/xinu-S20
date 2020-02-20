@@ -19,8 +19,9 @@ local	process startup(void);	/* Process to finish startup tasks	*/
 /* Declarations of major kernel variables */
 
 struct	procent	proctab[NPROC];	/* Process table			*/
-struct	sentry	semtab[NSEM];	/* Semaphore table			*/
+struct	sentry	semtab[NFUT];	/* Semaphore table			*/
 struct	memblk	memlist;	/* List of free memory blocks		*/
+struct  future_t futab[NSEM];    /* Futures table using the NFUT to init its capacity      */
 
 /* Active system status */
 
@@ -234,6 +235,14 @@ static	void	sysinit()
 		semptr->sstate = S_FREE;
 		semptr->scount = 0;
 		semptr->squeue = newqueue();
+	}
+
+		
+	/* Initialize futures */
+
+	for (i = 0; i < NFUT; i++) {
+		futptr = &futab[i];
+		futptr->state = FUTURE_EMPTY;
 	}
 
 	/* Initialize buffer pools */

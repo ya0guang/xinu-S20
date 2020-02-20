@@ -9,6 +9,7 @@
 #include <queue.h>
 #include <resched.h>
 #include <semaphore.h>
+#include <future.h>
 #include <memory.h>
 #include <bufpool.h>
 #include <clock.h>
