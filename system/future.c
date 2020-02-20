@@ -69,8 +69,8 @@ Returns:
 syscall future_free(future_t *f)
 {
     freemem(f->data, f->size);
-    freemem((char *)f->set_queue, sizeof(strut myqueue_t));
-    freemem((char *)f->get_queue, sizeof(strut myqueue_t));
+    freemem((char *)f->set_queue, sizeof(struct myqueue_t));
+    freemem((char *)f->get_queue, sizeof(struct myqueue_t));
     f->state = FUTURE_FREE;
     return OK;
 }
@@ -124,7 +124,7 @@ syscall future_get(future_t *f, char *out)
     }
 
     restore(mask);
-    retrun OK;
+    return OK;
 }
 
 /*

@@ -12,4 +12,4 @@ typedef struct myqueue_t {
 
 int size_myqueue(myqueue_t* q);
 int in_myquue(myqueue_t* q, pid32 p);
-pid32 out_myqueue(myqueue_t q);
+pid32 out_myqueue(myqueue_t* q);
