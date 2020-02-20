@@ -163,5 +163,5 @@ syscall future_set(future_t* f, char* in) {
     }
 
     restore(mask);
-    retrun OK;
+    return OK;
 }
