@@ -36,9 +36,9 @@ shellcmd xsh_run(int nargs, char *args[])
         resume(create((void *)prodcons_bb, 4096, 20, "prodcons_bb", 2, nargs, args));
     }
 
-    if (strcmp(args[0], "futures_test", 12) == 0)
+    if (strncmp(args[0], "futures_test", 12) == 0)
     {
-        if (strcmp(args[1], "-f", 2) == 0)
+        if (strncmp(args[1], "-f", 2) == 0)
         {
             resume(create((void *)ffib, 4096, 20, "ffib", 2, nargs, args));
         }
@@ -189,4 +189,6 @@ int ffib_bb(int nargs, char *args[])
         printf("Nth Fibonacci value for N=%d is %d\n", fib, final_fib);
         return (OK);
     }
+
+    return (OK);
 }

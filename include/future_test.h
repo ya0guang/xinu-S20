@@ -1,6 +1,6 @@
 
 // for future fib implementation
-static int zero = 0, one = 1, two = 2;
+static int zero = 0, one = 1;
 
 future_t **fibfut;
 int ffib(int n);
