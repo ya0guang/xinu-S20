@@ -8,6 +8,7 @@
 typedef enum {
   FUTURE_EMPTY,
   FUTURE_WAITING,
+  FUTURE_FREE,
   FUTURE_READY
 } future_state_t;
 
@@ -22,9 +23,9 @@ typedef struct future_t {
   uint size;
   future_state_t state;
   future_mode_t mode;
-  pid32 pid;
-  //yourtype set_queue;
-  //yourtype get_queue;
+  pid32 pid;   // used in FUTURE_EXCLUSIVE
+  myqueue_t *set_queue;
+  myqueue_t *get_queue;  // used in FUTURE_SHARED
 } future_t;
 
 extern struct future_t futab[];
