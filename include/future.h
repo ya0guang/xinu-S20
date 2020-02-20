@@ -24,8 +24,8 @@ typedef struct future_t {
   future_state_t state;
   future_mode_t mode;
   pid32 pid;   // used in FUTURE_EXCLUSIVE
-  myqueue_t *set_queue;
-  myqueue_t *get_queue;  // used in FUTURE_SHARED
+  struct myqueue_t *set_queue;
+  struct myqueue_t *get_queue;  // used in FUTURE_SHARED
 } future_t;
 
 extern struct future_t futab[];
