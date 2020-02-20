@@ -27,7 +27,7 @@ typedef struct future_t {
   //yourtype get_queue;
 } future_t;
 
-extern struct future_t futab[NFUT];
+extern struct future_t futab[];
 
 /* Interface for the Futures system calls */
 future_t* future_alloc(future_mode_t mode, uint size, uint nelems);

@@ -181,6 +181,7 @@ static	void	sysinit()
 	int32	i;
 	struct	procent	*prptr;		/* Ptr to process table entry	*/
 	struct	sentry	*semptr;	/* Ptr to semaphore table entry	*/
+	struct	future_t	*futptr;	/* Ptr to future table entry	*/
 
 	/* Platform Specific Initialization */
 
