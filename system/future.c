@@ -21,6 +21,8 @@ future_t *future_alloc(future_mode_t mode, uint size, uint nelems)
     intmask mask;
     future_t * futptr;
 
+    int i;
+
     mask = disable();
 
     for (i = 0; i < NFUT; i++)
