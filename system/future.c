@@ -31,7 +31,7 @@ future_t *future_alloc(future_mode_t mode, uint size, uint nelems)
         {
             futptr->state = FUTURE_WAITING;
             futptr->mode = mode;
-            futptr->data = getmem(size);
+            futptr->data = getmem(size * nelems);
             if((int32)futptr->data == SYSERR) {
                 restore(mask);
                 return (future_t *)SYSERR;

@@ -23,8 +23,8 @@ typedef struct future_t {
   future_state_t state;
   future_mode_t mode;
   pid32 pid;
-  yourtype set_queue;
-  yourtype get_queue;
+  //yourtype set_queue;
+  //yourtype get_queue;
 } future_t;
 
 extern struct future_t futab[NFUT];

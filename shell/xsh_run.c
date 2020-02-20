@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <prodcons_bb.h>
+#include <future_test.h>
 
 // definition of array, semaphores and indices
 
@@ -34,30 +35,42 @@ shellcmd xsh_run(int nargs, char *args[])
         /* create a process with the function as an entry point. */
         resume(create((void *)prodcons_bb, 4096, 20, "prodcons_bb", 2, nargs, args));
     }
-    
+
+    if (strcmp(args[0], "futures_test", 12) == 0)
+    {
+        if (strcmp(args[1], "-f", 2) == 0)
+        {
+            resume(create((void *)ffib, 4096, 20, "ffib", 2, nargs, args));
+        }
+    }
+
     return 0;
 }
 
 // Generate a string of process name with the seq# of process of the same name
-void gen_proc_name(int proc, int process_seq_num, char* name){
+void gen_proc_name(int proc, int process_seq_num, char *name)
+{
 
     const char default_fun_name[] = "default";
     const char producer_fun_name[] = "producer_bb";
     const char consumer_fun_name[] = "consumer_bb";
 
-    char* function_name;
+    char *function_name;
 
     char number[3] = {0};
 
     switch (proc)
     {
         // 1 for producer
-    case 1: function_name = producer_fun_name;
+    case 1:
+        function_name = producer_fun_name;
         break;
         // 2 for consumer
-    case 2: function_name = consumer_fun_name;
+    case 2:
+        function_name = consumer_fun_name;
         break;
-    default: function_name = default_fun_name;
+    default:
+        function_name = default_fun_name;
         break;
     }
 
@@ -66,7 +79,6 @@ void gen_proc_name(int proc, int process_seq_num, char* name){
 
     strncpy(name, function_name, 20);
     strncat(name, number, 3);
-    
 }
 
 void prodcons_bb(int nargs, char *args[])
@@ -90,7 +102,8 @@ void prodcons_bb(int nargs, char *args[])
     producer_iter = atoi(args[3]);
     consumer_iter = atoi(args[4]);
 
-    if((producer_count * producer_iter) != (consumer_count * consumer_iter)) {
+    if ((producer_count * producer_iter) != (consumer_count * consumer_iter))
+    {
         fprintf(stderr, "%s: argument error, \n", args[0]);
         fprintf(stderr, "Make sure that the number of total producer iterations and the number of total consumer iterations are equal. \n");
         return 1;
@@ -111,7 +124,8 @@ void prodcons_bb(int nargs, char *args[])
     //create producer and consumer processes and put them in ready queue
     int i;
 
-    for(i = 0; i < producer_count; i += 1){
+    for (i = 0; i < producer_count; i += 1)
+    {
         //create producer thread
 
         //generate the string or the process name
@@ -121,7 +135,8 @@ void prodcons_bb(int nargs, char *args[])
         resume(create((void *)producer_bb, 4096, 20, producer_name, 1, producer_iter));
     }
 
-    for(i = 0; i < consumer_count; i += 1){
+    for (i = 0; i < consumer_count; i += 1)
+    {
         //create consumer thread
 
         //generate the string or the process name
@@ -130,5 +145,48 @@ void prodcons_bb(int nargs, char *args[])
 
         resume(create((void *)consumer_bb, 4096, 20, consumer_name, 1, consumer_iter));
     }
+}
 
+int ffib_bb(int nargs, char *args[])
+{
+    int fib = -1, i;
+
+    fib = atoi(args[2]);
+
+    if (fib > -1)
+    {
+        int final_fib;
+        int future_flags = FUTURE_SHARED; // TODO - add appropriate future mode here
+
+        // create the array of future pointers
+        if ((fibfut = (future_t **)getmem(sizeof(future_t *) * (fib + 1))) == (future_t **)SYSERR)
+        {
+            printf("getmem failed\n");
+            return (SYSERR);
+        }
+
+        // get futures for the future array
+        for (i = 0; i <= fib; i++)
+        {
+            if ((fibfut[i] = future_alloc(future_flags, sizeof(int), 1)) == (future_t *)SYSERR)
+            {
+                printf("future_alloc failed\n");
+                return (SYSERR);
+            }
+        }
+
+        // spawn fib threads and get final value
+        // TODO - you need to add your code here
+
+        future_get(fibfut[fib], (char *)&final_fib);
+
+        for (i = 0; i <= fib; i++)
+        {
+            future_free(fibfut[i]);
+        }
+
+        freemem((char *)fibfut, sizeof(future_t *) * (fib + 1));
+        printf("Nth Fibonacci value for N=%d is %d\n", fib, final_fib);
+        return (OK);
+    }
 }
