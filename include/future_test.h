@@ -1,4 +1,8 @@
 
+int future_prodcons_bb(int nargs, char *args[]);
+int ffib_bb(int nargs, char *args[]);
+
+
 // for future fib implementation
 static int zero = 0, one = 1;
 
