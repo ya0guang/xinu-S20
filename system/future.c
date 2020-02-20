@@ -113,6 +113,7 @@ syscall future_get(future_t *f, char *out)
         in_myquue(f->get_queue, currpid);
         prptr->prstate = PR_WAIT;
         f->state = FUTURE_WAITING;
+        printf("pid %d asked for future, but not served...Reschedule", currpid);
         resched();
     }
 
@@ -121,6 +122,7 @@ syscall future_get(future_t *f, char *out)
         if(f->mode == FUTURE_EXCLUSIVE) {
             f->state = FUTURE_EMPTY;
         }
+        printf("pid %d served", currpid);
     }
 
     restore(mask);

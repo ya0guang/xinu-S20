@@ -43,6 +43,7 @@ pid32 out_myqueue(myqueue_t *q)
     {
         return (pid32)SYSERR;
     }
+    
     else
     {
         result = q->parray[q->head];
