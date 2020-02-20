@@ -40,7 +40,12 @@ shellcmd xsh_run(int nargs, char *args[])
     {
         if (strncmp(args[1], "-f", 2) == 0)
         {
-            resume(create((void *)ffib, 4096, 20, "ffib", 2, nargs, args));
+            resume(create((void *)ffib_bb, 4096, 20, "ffib", 2, nargs, args));
+        }
+
+        if (strncmp(args[1], "-pc", 2) == 0)
+        {
+            resume(create((void *)future_prodcons_bb, 4096, 20, "ffib", 2, nargs, args));
         }
     }
 
