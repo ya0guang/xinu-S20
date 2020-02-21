@@ -176,12 +176,16 @@ int future_prodcons_bb(int nargs, char *args[])
 }
 
 int mytest_bb()
-{
-    myqueue_t q;
-    int a = 1111;
-    in_myquue(&q, (pid32)a);
-    printf("size: %d", size_myqueue(&q));
-}
+ {   
+     myqueue_t * q = getmem((myqueue_t *)sizeof(struct myqueue_t));
+     q->head = 0;
+     q->tail = 0;
+     int a = 1111;
+     in_myquue(q, (pid32)a);
+     in_myquue(q, (pid32)a);
+     in_myquue(q, (pid32)a);
+     printf("size: %d", size_myqueue(q));
+ }
 
 int ffib_bb(int nargs, char *args[])
 {

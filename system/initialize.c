@@ -243,7 +243,7 @@ static	void	sysinit()
 
 	for (i = 0; i < NFUT; i++) {
 		futptr = &futab[i];
-		futptr->state = FUTURE_EMPTY;
+		futptr->state = FUTURE_FREE;
 	}
 
 	/* Initialize buffer pools */
