@@ -19,7 +19,7 @@ local	process startup(void);	/* Process to finish startup tasks	*/
 /* Declarations of major kernel variables */
 
 struct	procent	proctab[NPROC];	/* Process table			*/
-struct	sentry	semtab[NFUT];	/* Semaphore table			*/
+struct	sentry	semtab[NSEM];	/* Semaphore table			*/
 struct	memblk	memlist;	/* List of free memory blocks		*/
 // struct  future_t futab[NSEM];    /* Futures table using the NFUT to init its capacity      */
 
@@ -181,7 +181,7 @@ static	void	sysinit()
 	int32	i;
 	struct	procent	*prptr;		/* Ptr to process table entry	*/
 	struct	sentry	*semptr;	/* Ptr to semaphore table entry	*/
-	struct	future_t	*futptr;	/* Ptr to future table entry	*/
+	// struct	future_t	*futptr;	/* Ptr to future table entry	*/
 
 	/* Platform Specific Initialization */
 
