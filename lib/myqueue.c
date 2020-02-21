@@ -31,7 +31,7 @@ int in_myquue(myqueue_t *q, pid32 p)
     {
         q->parray[q->tail] = p;
         q->tail = plus1(q->tail);
-        printf("DEBUG: Put into queue, size: %d\n", size_myqueue(q));
+        printf("DEBUG: Put into queue, size: %d\n, head: %d, tail: %d", size_myqueue(q), q->head, q->tail);
         return OK;
     }
 }
@@ -44,7 +44,7 @@ pid32 out_myqueue(myqueue_t *q)
     {
         return (pid32)SYSERR;
     }
-    
+
     else
     {
         result = q->parray[q->head];

@@ -160,7 +160,7 @@ int future_prodcons_bb(int nargs, char *args[])
 
     // Test FUTURE_EXCLUSIVE
     resume(create(future_cons, 1024, 20, "fcons1", 1, f_exclusive));
-    resume(create(future_prod, 1024, 20, "fprod1", 2, f_exclusive, (char *)&one));
+    resume(create(future_prod, 1024, 20, "fprod1", 2, f_exclusive, (char *)&anumber));
 
     // Test FUTURE_SHARED
     // resume(create(future_cons, 1024, 20, "fcons2", 1, f_shared));

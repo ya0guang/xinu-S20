@@ -45,7 +45,6 @@ future_t *future_alloc(future_mode_t mode, uint size, uint nelems)
             futptr->mode = mode;
             futptr->size = size;
 
-
             futptr->set_queue->head = 0;
             futptr->set_queue->tail = 0;
             futptr->get_queue->head = 0;
@@ -122,7 +121,7 @@ syscall future_get(future_t *f, char *out)
 
     if (f->state == FUTURE_READY)
     {
-        memcpy((void *)f->data, (void *)out, f->size);
+        memcpy((void *)out, (void *)f->data, f->size);
         if (f->mode == FUTURE_EXCLUSIVE)
         {
             f->state = FUTURE_EMPTY;
@@ -166,7 +165,7 @@ syscall future_set(future_t *f, char *in)
 
     if (f->state == FUTURE_WAITING)
     {
-        memcpy((void *)in, (void *)f->data, f->size);
+        memcpy((void *)f->data, (void *)in, f->size);
         f->state = FUTURE_READY;
         printf("DEBUG: future fulfilled\n");
         printf("DEBUG: queue size: %d", size_myqueue(f->get_queue));
