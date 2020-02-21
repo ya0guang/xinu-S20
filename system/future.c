@@ -21,38 +21,30 @@ future_t *future_alloc(future_mode_t mode, uint size, uint nelems)
     intmask mask;
     future_t *futptr;
 
-    int i;
-
     mask = disable();
 
-    for (i = 0; i < NFUT; i++)
+    // memory allocation
+    futptr = (struct future_t *)getmem(sizeof(struct future_t));
+    futptr->data = getmem(size);
+    futptr->set_queue = (struct myqueue_t *)getmem(sizeof(struct myqueue_t));
+    futptr->get_queue = (struct myqueue_t *)getmem(sizeof(struct myqueue_t));
+
+    if ((int32)futptr == SYSERR || (int32)futptr->data == SYSERR || (int32)futptr->get_queue == SYSERR || (int32)futptr->set_queue == SYSERR)
     {
-        futptr = &futab[i];
-
-        if (futptr->state == FUTURE_FREE)
-        {
-            futptr->data = getmem(size);
-            futptr->set_queue = (struct myqueue_t *)getmem(sizeof(struct myqueue_t));
-            futptr->get_queue = (struct myqueue_t *)getmem(sizeof(struct myqueue_t));
-            if ((int32)futptr->data == SYSERR || (int32)futptr->get_queue == SYSERR || (int32)futptr->set_queue == SYSERR)
-            {
-                printf("ERROR: future initialization failed. Reason: cannot allocate memory\n");
-                restore(mask);
-                return (future_t *)SYSERR;
-            }
-
-            futptr->state = FUTURE_EMPTY;
-            futptr->mode = mode;
-            futptr->size = size;
-
-            futptr->set_queue->head = 0;
-            futptr->set_queue->tail = 0;
-            futptr->get_queue->head = 0;
-            futptr->get_queue->tail = 0;
-            restore(mask);
-            return futptr;
-        }
+        printf("ERROR: future initialization failed. Reason: cannot allocate memory\n");
+        restore(mask);
+        return (future_t *)SYSERR;
     }
+
+    futptr->state = FUTURE_EMPTY;
+    futptr->mode = mode;
+    futptr->size = size;
+
+    futptr->set_queue->head = 0;
+    futptr->set_queue->tail = 0;
+    futptr->get_queue->head = 0;
+    futptr->get_queue->tail = 0;
+
     restore(mask);
     return (future_t *)SYSERR;
 }
@@ -72,7 +64,7 @@ syscall future_free(future_t *f)
     freemem(f->data, f->size);
     freemem((char *)f->set_queue, sizeof(struct myqueue_t));
     freemem((char *)f->get_queue, sizeof(struct myqueue_t));
-    f->state = FUTURE_FREE;
+    freemem((char *)f, sizeof(struct future_t));
     return OK;
 }
 

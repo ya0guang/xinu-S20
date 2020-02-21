@@ -1,9 +1,9 @@
 #ifndef _FUTURE_H_
 #define _FUTURE_H_
 
-#ifndef	NFUT
-#define	NFUT		120	/* Number of semaphores, if not defined	*/
-#endif
+// #ifndef	NFUT
+// #define	NFUT		120	/* Number of semaphores, if not defined	*/
+// #endif
 
 #include <myqueue.h>
 
@@ -30,7 +30,7 @@ typedef struct future_t {
   myqueue_t *get_queue;  // used in FUTURE_SHARED
 } future_t;
 
-extern struct future_t futab[];
+// extern struct future_t futab[];
 
 /* Interface for the Futures system calls */
 future_t* future_alloc(future_mode_t mode, uint size, uint nelems);
