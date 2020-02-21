@@ -5,6 +5,8 @@
 #define	NFUT		120	/* Number of semaphores, if not defined	*/
 #endif
 
+#include <myqueue.h>
+
 typedef enum {
   FUTURE_EMPTY,
   FUTURE_WAITING,
