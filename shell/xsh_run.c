@@ -49,6 +49,11 @@ shellcmd xsh_run(int nargs, char *args[])
         }
     }
 
+    if (strncmp(args[0], "test", 4) == 0)
+    {
+        mytest_bb();
+    }
+
     return 0;
 }
 
@@ -168,6 +173,14 @@ int future_prodcons_bb(int nargs, char *args[])
     // resume(create(future_cons, 1024, 20, "fcons4", 1, f_shared));
     // resume(create(future_cons, 1024, 20, "fcons5", 1, f_shared));
     // resume(create(future_prod, 1024, 20, "fprod2", 2, f_shared, (char *)&two));
+}
+
+int mytest_bb()
+{
+    myqueue_t q;
+    int a = 1111;
+    in_myquue(&q, (pid32)a);
+    printf("size: %d", size_myqueue(&q));
 }
 
 int ffib_bb(int nargs, char *args[])
