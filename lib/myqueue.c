@@ -31,6 +31,7 @@ int in_myquue(myqueue_t *q, pid32 p)
     {
         q->parray[q->tail] = p;
         q->tail = plus1(q->tail);
+        printf("DEBUG: Put into queue, size: %d\n", size_myqueue(q));
         return OK;
     }
 }

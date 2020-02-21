@@ -32,8 +32,11 @@ future_t *future_alloc(future_mode_t mode, uint size, uint nelems)
         if (futptr->state == FUTURE_FREE)
         {
             futptr->data = getmem(size);
-            if ((int32)futptr->data == SYSERR)
+            futptr->set_queue = (struct myqueue_t *)getmem(sizeof(struct myqueue_t));
+            futptr->get_queue = (struct myqueue_t *)getmem(sizeof(struct myqueue_t));
+            if ((int32)futptr->data == SYSERR || (int32)futptr->get_queue == SYSERR || (int32)futptr->set_queue == SYSERR)
             {
+                printf("ERROR: future initialization failed. Reason: cannot allocate memory\n");
                 restore(mask);
                 return (future_t *)SYSERR;
             }
@@ -41,8 +44,7 @@ future_t *future_alloc(future_mode_t mode, uint size, uint nelems)
             futptr->state = FUTURE_EMPTY;
             futptr->mode = mode;
             futptr->size = size;
-            futptr->set_queue = (struct myqueue_t *)getmem(sizeof(struct myqueue_t));
-            futptr->get_queue = (struct myqueue_t *)getmem(sizeof(struct myqueue_t));
+
 
             futptr->set_queue->head = 0;
             futptr->set_queue->tail = 0;
