@@ -27,6 +27,7 @@ int plus1(int index)
 
 int in_myquue(myqueue_t *q, pid32 p)
 {
+    int my_size;
     if (size_myqueue(q) >= MYQUEUELEN - 1)
     {
         return SYSERR;
@@ -35,7 +36,8 @@ int in_myquue(myqueue_t *q, pid32 p)
     {
         q->parray[q->tail] = p;
         q->tail = plus1(q->tail);
-        printf("DEBUG: Put into queue, size: %d, head: %d, tail: %d\n", size_myqueue(q), q->head, q->tail);
+        my_size = size_myqueue(q);
+        printf("DEBUG: Put into queue, size: %d, head: %d, tail: %d\n", my_size, q->head, q->tail);
         return OK;
     }
 }
