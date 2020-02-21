@@ -4,11 +4,11 @@ int size_myqueue(myqueue_t *q)
 {
     if (q->head <= q->tail)
     {
-        return q->tail - q->head;
+        return (q->tail - q->head);
     }
     else
     {
-        return q->tail + MYQUEUELEN - q->head;
+        return (q->tail + MYQUEUELEN - q->head);
     }
 }
 
@@ -31,7 +31,7 @@ int in_myquue(myqueue_t *q, pid32 p)
     {
         q->parray[q->tail] = p;
         q->tail = plus1(q->tail);
-        printf("DEBUG: Put into queue, size: %d\n, head: %d, tail: %d", size_myqueue(q), q->head, q->tail);
+        printf("DEBUG: Put into queue, size: %d, head: %d, tail: %d\n", size_myqueue(q), q->head, q->tail);
         return OK;
     }
 }
