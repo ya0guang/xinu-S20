@@ -5,7 +5,7 @@ int size_myqueue(myqueue_t *q)
     int result;
     if (q->head <= q->tail)
     {
-        printf("head: %d, tail: %d minus: %d \n", q->head, q->tail, q->tail - q->head);
+        // printf("head: %d, tail: %d minus: %d \n", q->head, q->tail, q->tail - q->head);
         result = q->tail - q->head;
     }
     else
