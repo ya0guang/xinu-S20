@@ -177,13 +177,15 @@ int future_prodcons_bb(int nargs, char *args[])
 
 int mytest_bb()
  {   
-     myqueue_t * q = getmem((myqueue_t *)sizeof(struct myqueue_t));
-     q->head = 0;
-     q->tail = 0;
-     int a = 1111;
-     in_myquue(q, (pid32)a);
-     in_myquue(q, (pid32)a);
-     in_myquue(q, (pid32)a);
+     future_t *f;
+     int data_in = 1111;
+     int data_out;
+     int * ptr_in = &data_in;
+     int * ptr_out = &data_out;
+
+     f = future_alloc(FUTURE_EXCLUSIVE, sizeof(int), 1);
+     future_set(f, (char *)ptr_in);
+     data = future_get(f, (char *)ptr_out);
      printf("size: %d", size_myqueue(q));
  }
 
