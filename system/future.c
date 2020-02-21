@@ -95,34 +95,37 @@ syscall future_get(future_t *f, char *out)
     prptr = &proctab[currpid];
     f->pid = currpid;
 
-    // error future getting 
+    // error future getting
     if (f->state == FUTURE_FREE)
     {
-        printf("Trying to get a free future");
+        printf("ERROR: Trying to get a free future\n");
         return SYSERR;
     }
 
     if (f->state == FUTURE_WAITING && f->mode == FUTURE_EXCLUSIVE)
     {
-        printf("Trying to get from an exclusive future more than once");
+        printf("ERROR: Trying to get from an exclusive future more than once\n");
         return SYSERR;
     }
 
     // reschedule
-    if(f->state != FUTURE_READY) {
+    if (f->state != FUTURE_READY)
+    {
         in_myquue(f->get_queue, currpid);
         prptr->prstate = PR_WAIT;
         f->state = FUTURE_WAITING;
-        printf("pid %d asked for future, but not served...Reschedule", currpid);
+        printf("DEBUG: pid %d asked for future, but not served...Reschedule\n", currpid);
         resched();
     }
 
-    if(f->state == FUTURE_READY) {
+    if (f->state == FUTURE_READY)
+    {
         memcpy((void *)f->data, (void *)out, f->size);
-        if(f->mode == FUTURE_EXCLUSIVE) {
+        if (f->mode == FUTURE_EXCLUSIVE)
+        {
             f->state = FUTURE_EMPTY;
         }
-        printf("pid %d served", currpid);
+        printf("DEBUG: pid %d served\n", currpid);
     }
 
     restore(mask);
@@ -139,29 +142,41 @@ Parameters:
 Returns: syscall - SYSERR or OK
 */
 
-syscall future_set(future_t* f, char* in) {
+syscall future_set(future_t *f, char *in)
+{
     int mask;
     mask = disable();
 
     pid32 pid_to_ready;
 
-    // error future getting 
+    // error future getting
     if (f->state == FUTURE_FREE)
     {
-        printf("Trying to set a free future");
+        printf("ERROR: Trying to set a free future\n");
         return SYSERR;
     }
 
     if (f->state == FUTURE_READY && f->mode == FUTURE_EXCLUSIVE)
     {
-        printf("Trying to set a ready future for an exclusive future more than once");
+        printf("ERROR: Trying to set a ready future for an exclusive future more than once\n");
         return SYSERR;
     }
 
-    while (size_myqueue(f->get_queue))
+    if (f->state == FUTURE_WAITING)
     {
-        pid_to_ready = out_myqueue(f->get_queue);
-        ready(pid_to_ready);
+        memcpy((void *)in, (void *)f->data, f->size);
+        f->state = FUTURE_READY;
+        printf("DEBUG: future fulfilled\n");
+    }
+
+    if (f->state == FUTURE_READY)
+    {
+        while (size_myqueue(f->get_queue))
+        {
+            pid_to_ready = out_myqueue(f->get_queue);
+            ready(pid_to_ready);
+            printf("DEBUG: pid: %d set to ready\n", pid_to_ready);
+        }
     }
 
     restore(mask);
