@@ -2,14 +2,16 @@
 
 int size_myqueue(myqueue_t *q)
 {
+    int result;
     if (q->head <= q->tail)
     {
-        return (q->tail - q->head);
+        result = q->tail - q->head;
     }
     else
     {
-        return (q->tail + MYQUEUELEN - q->head);
+        result =  (q->tail + MYQUEUELEN - q->head) % MYQUEUELEN;
     }
+    return result;
 }
 
 int plus1(int index)
