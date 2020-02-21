@@ -167,6 +167,7 @@ syscall future_set(future_t *f, char *in)
         memcpy((void *)in, (void *)f->data, f->size);
         f->state = FUTURE_READY;
         printf("DEBUG: future fulfilled\n");
+        printf("DEBUG: queue size: %d", size_myqueue(f->get_queue));
     }
 
     if (f->state == FUTURE_READY)
