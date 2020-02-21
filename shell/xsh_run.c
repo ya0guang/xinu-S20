@@ -185,8 +185,8 @@ int mytest_bb()
 
      f = future_alloc(FUTURE_EXCLUSIVE, sizeof(int), 1);
      future_set(f, (char *)ptr_in);
-     data = future_get(f, (char *)ptr_out);
-     printf("size: %d", size_myqueue(q));
+     future_get(f, (char *)ptr_out);
+     printf("size: %d", data_out);
  }
 
 int ffib_bb(int nargs, char *args[])
