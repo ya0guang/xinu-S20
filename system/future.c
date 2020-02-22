@@ -159,13 +159,13 @@ syscall future_set(future_t *f, char *in)
 
     if (f->state == FUTURE_WAITING)
     {
+        f->state = FUTURE_READY;
         while (size_myqueue(f->get_queue))
         {
             pid_to_ready = out_myqueue(f->get_queue);
             ready(pid_to_ready);
             printf("DEBUG: pid: %d set to ready\n", pid_to_ready);
         }
-        f->state = FUTURE_READY;
         printf("DEBUG: future fulfilled\n");
         printf("DEBUG: queue size: %d", size_myqueue(f->get_queue));
     }
