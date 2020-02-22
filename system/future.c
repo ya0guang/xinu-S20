@@ -89,11 +89,11 @@ syscall future_get(future_t *f, char *out)
     f->pid = currpid;
 
     // error future getting
-    if (f->state == FUTURE_FREE)
-    {
-        printf("ERROR: Trying to get a free future\n");
-        return SYSERR;
-    }
+    // if (f->state == FUTURE_FREE)
+    // {
+    //     printf("ERROR: Trying to get a free future\n");
+    //     return SYSERR;
+    // }
 
     if (f->state == FUTURE_WAITING && f->mode == FUTURE_EXCLUSIVE)
     {
@@ -143,21 +143,23 @@ syscall future_set(future_t *f, char *in)
     pid32 pid_to_ready;
 
     // error future getting
-    if (f->state == FUTURE_FREE)
-    {
-        printf("ERROR: Trying to set a free future\n");
-        return SYSERR;
-    }
+    // if (f->state == FUTURE_FREE)
+    // {
+    //     printf("ERROR: Trying to set a free future\n");
+    //     return SYSERR;
+    // }
 
-    if (f->state == FUTURE_READY && f->mode == FUTURE_EXCLUSIVE)
+    if (f->state == FUTURE_READY && (f->mode == FUTURE_EXCLUSIVE) || (f->mode == FUTURE_SHARED))
     {
         printf("ERROR: Trying to set a ready future for an exclusive future more than once\n");
         return SYSERR;
     }
 
-    if (f->state == FUTURE_WAITING)
+    memcpy((void *)f->data, (void *)in, f->size);
+
+    if (f->state != FUTURE_READY)
     {
-        memcpy((void *)f->data, (void *)in, f->size);
+        
         f->state = FUTURE_READY;
         printf("DEBUG: future fulfilled\n");
         printf("DEBUG: queue size: %d", size_myqueue(f->get_queue));
