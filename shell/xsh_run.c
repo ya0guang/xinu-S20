@@ -174,8 +174,6 @@ int future_prodcons_bb(int nargs, char *args[])
     resume(create(future_cons, 1024, 20, "fcons5", 1, f_shared));
     resume(create(future_prod, 1024, 20, "fprod2", 2, f_shared, (char *)&two));
 
-    future_free(f_exclusive);
-    future_free(f_shared);
 }
 
 int mytest_bb()
@@ -222,6 +220,9 @@ int ffib_bb(int nargs, char *args[])
 
         // spawn fib threads and get final value
         // TODO - you need to add your code here
+        for(i = 0; i<= fib; i++) {
+            resume(create(ffib, 1024, 20, "ffib", 1, i));
+        }
 
         future_get(fibfut[fib], (char *)&final_fib);
 
