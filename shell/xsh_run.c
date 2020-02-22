@@ -162,10 +162,10 @@ int future_prodcons_bb(int nargs, char *args[])
     future_t *f_exclusive, *f_shared;
     f_exclusive = future_alloc(FUTURE_EXCLUSIVE, sizeof(int), 1);
     f_shared = future_alloc(FUTURE_SHARED, sizeof(int), 1);
-
+    
     // Test FUTURE_EXCLUSIVE
-    resume(create(future_prod, 1024, 20, "fprod1", 2, f_exclusive, (char *)&anumber));
     resume(create(future_cons, 1024, 20, "fcons1", 1, f_exclusive));
+    resume(create(future_prod, 1024, 20, "fprod1", 2, f_exclusive, (char *)&anumber));
 
     // Test FUTURE_SHARED
     // resume(create(future_cons, 1024, 20, "fcons2", 1, f_shared));
@@ -176,19 +176,18 @@ int future_prodcons_bb(int nargs, char *args[])
 }
 
 int mytest_bb()
- {   
-     future_t *f;
-     int data_in = 1111;
-     int data_out;
-     int * ptr_in = &data_in;
-     int * ptr_out = &data_out;
+{
+    future_t *f;
+    int data_in = 1111;
+    int data_out;
+    int *ptr_in = &data_in;
+    int *ptr_out = &data_out;
 
-     f = future_alloc(FUTURE_EXCLUSIVE, sizeof(int), 1);
-     future_set(f, (char *)ptr_in);
-     future_get(f, (char *)ptr_out);
-     printf("size: %d", data_out);
-
- }
+    f = future_alloc(FUTURE_EXCLUSIVE, sizeof(int), 1);
+    future_set(f, (char *)ptr_in);
+    future_get(f, (char *)ptr_out);
+    printf("size: %d", data_out);
+}
 
 int ffib_bb(int nargs, char *args[])
 {
