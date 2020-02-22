@@ -83,6 +83,8 @@ syscall future_get(future_t *f, char *out)
     int mask;
     mask = disable();
 
+    struct procent *prptr; /* Ptr to process' table entry	*/
+
     // error future getting
     // if (f->state == FUTURE_FREE)
     // {
@@ -96,10 +98,8 @@ syscall future_get(future_t *f, char *out)
         return SYSERR;
     }
 
-    struct procent *prptr; /* Ptr to process' table entry	*/
-
     // reschedule
-    if (f->state == FUTURE_EMPTY)
+    if (f->state != FUTURE_READY)
     {
         f->pid = currpid;
         f->state = FUTURE_WAITING;
@@ -116,7 +116,6 @@ syscall future_get(future_t *f, char *out)
         if (f->mode == FUTURE_EXCLUSIVE)
         {
             f->state = FUTURE_EMPTY;
-
         }
         //printf("DEBUG: pid %d served\n", currpid);
     }
@@ -164,10 +163,7 @@ syscall future_set(future_t *f, char *in)
         {
             pid_to_ready = out_myqueue(f->get_queue);
             ready(pid_to_ready);
-            //printf("DEBUG: pid: %d set to ready\n", pid_to_ready);
         }
-        //printf("DEBUG: future fulfilled\n");
-        //printf("DEBUG: queue size: %d", size_myqueue(f->get_queue));
     }
 
     if (f->state == FUTURE_EMPTY)
