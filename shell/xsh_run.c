@@ -187,6 +187,7 @@ int mytest_bb()
      future_set(f, (char *)ptr_in);
      future_get(f, (char *)ptr_out);
      printf("size: %d", data_out);
+
  }
 
 int ffib_bb(int nargs, char *args[])
