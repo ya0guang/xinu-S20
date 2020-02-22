@@ -85,8 +85,6 @@ syscall future_get(future_t *f, char *out)
 
     struct procent *prptr; /* Ptr to process' table entry	*/
 
-    prptr = &proctab[currpid];
-    f->pid = currpid;
 
     // error future getting
     // if (f->state == FUTURE_FREE)
@@ -102,8 +100,10 @@ syscall future_get(future_t *f, char *out)
     }
 
     // reschedule
-    if (f->state != FUTURE_READY)
+    if (f->state == FUTURE_EMPTY)
     {
+        prptr = &proctab[currpid];
+        f->pid = currpid;
         in_myquue(f->get_queue, currpid);
         prptr->prstate = PR_WAIT;
         f->state = FUTURE_WAITING;
@@ -157,15 +157,7 @@ syscall future_set(future_t *f, char *in)
 
     memcpy((void *)f->data, (void *)in, f->size);
 
-    if (f->state != FUTURE_READY)
-    {
-        
-        f->state = FUTURE_READY;
-        printf("DEBUG: future fulfilled\n");
-        printf("DEBUG: queue size: %d", size_myqueue(f->get_queue));
-    }
-
-    if (f->state == FUTURE_READY)
+    if (f->state == FUTURE_WAITING)
     {
         while (size_myqueue(f->get_queue))
         {
@@ -173,6 +165,14 @@ syscall future_set(future_t *f, char *in)
             ready(pid_to_ready);
             printf("DEBUG: pid: %d set to ready\n", pid_to_ready);
         }
+        f->state = FUTURE_READY;
+        printf("DEBUG: future fulfilled\n");
+        printf("DEBUG: queue size: %d", size_myqueue(f->get_queue));
+    }
+
+    if (f->state == FUTURE_EMPTY)
+    {
+        f->state = FUTURE_READY;
     }
 
     restore(mask);
