@@ -83,9 +83,6 @@ syscall future_get(future_t *f, char *out)
     int mask;
     mask = disable();
 
-    struct procent *prptr; /* Ptr to process' table entry	*/
-
-
     // error future getting
     // if (f->state == FUTURE_FREE)
     // {
@@ -99,14 +96,16 @@ syscall future_get(future_t *f, char *out)
         return SYSERR;
     }
 
+    struct procent *prptr; /* Ptr to process' table entry	*/
+
     // reschedule
     if (f->state == FUTURE_EMPTY)
     {
-        prptr = &proctab[currpid];
         f->pid = currpid;
+        f->state = FUTURE_WAITING;
+        prptr = &proctab[currpid];
         in_myquue(f->get_queue, currpid);
         prptr->prstate = PR_WAIT;
-        f->state = FUTURE_WAITING;
         printf("DEBUG: pid %d asked for future, but not served...Reschedule\n", currpid);
         resched();
     }
@@ -117,6 +116,12 @@ syscall future_get(future_t *f, char *out)
         if (f->mode == FUTURE_EXCLUSIVE)
         {
             f->state = FUTURE_EMPTY;
+            /* think it's useless: BEGIN */
+            while (size_myqueue(f->get_queue))
+            {
+                out_myqueue(f->get_queue);
+            }
+            /*END*/
         }
         printf("DEBUG: pid %d served\n", currpid);
     }
@@ -140,8 +145,6 @@ syscall future_set(future_t *f, char *in)
     int mask;
     mask = disable();
 
-    pid32 pid_to_ready;
-
     // error future getting
     // if (f->state == FUTURE_FREE)
     // {
@@ -160,12 +163,13 @@ syscall future_set(future_t *f, char *in)
     if (f->state == FUTURE_WAITING)
     {
         f->state = FUTURE_READY;
-        while (size_myqueue(f->get_queue))
-        {
-            pid_to_ready = out_myqueue(f->get_queue);
-            ready(pid_to_ready);
-            printf("DEBUG: pid: %d set to ready\n", pid_to_ready);
-        }
+        // while (size_myqueue(f->get_queue))
+        // {
+        //     pid_to_ready = out_myqueue(f->get_queue);
+        //     ready(pid_to_ready);
+        //     printf("DEBUG: pid: %d set to ready\n", pid_to_ready);
+        // }
+        ready(f->pid);
         printf("DEBUG: future fulfilled\n");
         printf("DEBUG: queue size: %d", size_myqueue(f->get_queue));
     }
