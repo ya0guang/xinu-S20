@@ -13,7 +13,7 @@ int size_myqueue(myqueue_t *q)
     {
         result = (q->tail + MYQUEUELEN - q->head) % MYQUEUELEN;
     }
-    printf("DEBUG: result %d\n", result);
+    //printf("DEBUG: result %d\n", result);
     return result;
 }
 
@@ -38,7 +38,7 @@ int in_myquue(myqueue_t *q, pid32 p)
         q->parray[q->tail] = p;
         q->tail = plus1(q->tail);
         my_size = size_myqueue(q);
-        printf("DEBUG: Put into queue, size: %d, head: %d, tail: %d\n", my_size, q->head, q->tail);
+        //printf("DEBUG: Put into queue, size: %d, head: %d, tail: %d\n", my_size, q->head, q->tail);
         return OK;
     }
 }

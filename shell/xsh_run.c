@@ -162,17 +162,17 @@ int future_prodcons_bb(int nargs, char *args[])
     future_t *f_exclusive, *f_shared;
     f_exclusive = future_alloc(FUTURE_EXCLUSIVE, sizeof(int), 1);
     f_shared = future_alloc(FUTURE_SHARED, sizeof(int), 1);
-    
+
     // Test FUTURE_EXCLUSIVE
     resume(create(future_cons, 1024, 20, "fcons1", 1, f_exclusive));
-    resume(create(future_prod, 1024, 20, "fprod1", 2, f_exclusive, (char *)&anumber));
+    resume(create(future_prod, 1024, 20, "fprod1", 2, f_exclusive, (char *)&one));
 
     // Test FUTURE_SHARED
-    // resume(create(future_cons, 1024, 20, "fcons2", 1, f_shared));
-    // resume(create(future_cons, 1024, 20, "fcons3", 1, f_shared));
-    // resume(create(future_cons, 1024, 20, "fcons4", 1, f_shared));
-    // resume(create(future_cons, 1024, 20, "fcons5", 1, f_shared));
-    // resume(create(future_prod, 1024, 20, "fprod2", 2, f_shared, (char *)&two));
+    resume(create(future_cons, 1024, 20, "fcons2", 1, f_shared));
+    resume(create(future_cons, 1024, 20, "fcons3", 1, f_shared));
+    resume(create(future_cons, 1024, 20, "fcons4", 1, f_shared));
+    resume(create(future_cons, 1024, 20, "fcons5", 1, f_shared));
+    resume(create(future_prod, 1024, 20, "fprod2", 2, f_shared, (char *)&two));
 }
 
 int mytest_bb()

@@ -4,7 +4,7 @@ int ffib_bb(int nargs, char *args[]);
 
 
 // for future fib implementation
-static int zero = 0, one = 1;
+static int zero = 0, one = 1, two = 2;
 static int anumber = 998;
 
 future_t **fibfut;
