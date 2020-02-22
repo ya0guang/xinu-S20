@@ -116,12 +116,7 @@ syscall future_get(future_t *f, char *out)
         if (f->mode == FUTURE_EXCLUSIVE)
         {
             f->state = FUTURE_EMPTY;
-            /* think it's useless: BEGIN */
-            while (size_myqueue(f->get_queue))
-            {
-                out_myqueue(f->get_queue);
-            }
-            /*END*/
+
         }
         //printf("DEBUG: pid %d served\n", currpid);
     }
@@ -154,7 +149,7 @@ syscall future_set(future_t *f, char *in)
     //     return SYSERR;
     // }
 
-    if (f->state == FUTURE_READY && (f->mode == FUTURE_EXCLUSIVE) || (f->mode == FUTURE_SHARED))
+    if (f->state == FUTURE_READY && f->mode == FUTURE_EXCLUSIVE)
     {
         printf("ERROR: Trying to set a ready future for an exclusive future more than once\n");
         return SYSERR;
