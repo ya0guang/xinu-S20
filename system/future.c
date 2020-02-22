@@ -46,7 +46,7 @@ future_t *future_alloc(future_mode_t mode, uint size, uint nelems)
     futptr->get_queue->tail = 0;
 
     restore(mask);
-    return (future_t *)SYSERR;
+    return futptr;
 }
 
 /*------------------------------------------
