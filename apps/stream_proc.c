@@ -112,8 +112,8 @@ int stream_proc(int nargs, char *args[])
 
         wait(sts[st].spaces);
         wait(sts[st].mutex);
-        sts[st].queue[tail].time = ts;
-        sts[st].queue[tail].value = v;
+        sts[st].queue[sts[st].tail].time = ts;
+        sts[st].queue[sts[st].tail].value = v;
         sts[st].tail += 1;
         signal(sts[st].mutex);
         signal(sts[st].items);
@@ -147,7 +147,7 @@ void stream_consumer(int32 id, struct stream *str)
     v = str->queue[str->head].value;
     str->head += 1;
     signal(str->mutex);
-    signal(str->spaces)
+    signal(str->spaces);
 
     ptsend(pcport, getpid());
 }
