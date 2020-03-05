@@ -10,8 +10,8 @@ int stream_proc(int nargs, char *args[])
     msecs = clkticks;
 
     int i;
-    int char* ch;
-    int char c;
+    char* ch;
+    char c;
 
     /* for streaming */
     struct stream * sts;
