@@ -80,6 +80,7 @@ int stream_proc(int nargs, char *args[])
     }
 
     // Create consumer processes and initialize streams
+    pid32 c_pid;
 
     for (i = 0; i < num_streams; i++)
     {
@@ -95,7 +96,9 @@ int stream_proc(int nargs, char *args[])
         // Create consumer process
         consumer_name[15] = (char)(48 + i);
 
-        resume(create((void *)stream_consumer, 4096, 20, consumer_name, 2, i, &sts[i]));
+        c_pid = create((void *)stream_consumer, 4096, 20, consumer_name, 2, i, &sts[i])
+        resume(c_pid);
+        printf("stream_consumer id:%d (pid:%d)", i, c_pid)
     }
 
     // Parse input header file data and populate work queue
