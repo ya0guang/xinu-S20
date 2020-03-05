@@ -53,7 +53,7 @@ shellcmd xsh_run(int nargs, char *args[])
     }
 
     if (strncmp(args[0], "tscdf", 5) == 0){
-        resume(create((void *)stream_consumer, 4096, 20, "stream_consumer", 2, nargs, args));
+        resume(create((void *)stream_proc, 4096, 20, "stream_proc", 2, nargs, args));
     }
 
     if (strncmp(args[0], "test", 4) == 0)
