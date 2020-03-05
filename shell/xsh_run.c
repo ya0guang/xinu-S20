@@ -3,6 +3,7 @@
 #include <string.h>
 #include <prodcons_bb.h>
 #include <future_test.h>
+#include <stream_proc.h>
 
 // definition of array, semaphores and indices
 
@@ -21,6 +22,8 @@ shellcmd xsh_run(int nargs, char *args[])
     if ((nargs == 1) || (strncmp(args[1], "list", 5) == 0))
     {
         printf("prodcons_bb\n");
+        printf("futures_test\n");
+        printf("tscdf\n");
         return OK;
     }
 
@@ -47,6 +50,10 @@ shellcmd xsh_run(int nargs, char *args[])
         {
             resume(create((void *)future_prodcons_bb, 4096, 20, "ffib", 2, nargs, args));
         }
+    }
+
+    if (strncmp(args[0], "tscdf", 5) == 0){
+        resume(create((void *)stream_consumer, 4096, 20, "stream_consumer", 2, nargs, args));
     }
 
     if (strncmp(args[0], "test", 4) == 0)
