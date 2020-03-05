@@ -104,7 +104,7 @@ int stream_proc(int nargs, char *args[])
 void stream_consumer(int32 id, struct stream *str)
 {
     char * a;
-    int st, ts, v;
+    int st, ts, v, i;
 
     a = (char *)stream_input[i];
     st = atoi(a);
