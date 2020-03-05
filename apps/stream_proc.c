@@ -96,7 +96,7 @@ int stream_proc(int nargs, char *args[])
         // Create consumer process
         consumer_name[15] = (char)(48 + i);
 
-        c_pid = create((void *)stream_consumer, 4096, 20, consumer_name, 2, i, &sts[i])
+        c_pid = create((void *)stream_consumer, 4096, 20, consumer_name, 2, i, &sts[i]);
         resume(c_pid);
         printf("stream_consumer id:%d (pid:%d)", i, c_pid)
     }
