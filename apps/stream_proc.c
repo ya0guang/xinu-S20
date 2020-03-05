@@ -2,6 +2,8 @@
 #include <stream_proc.h>
 #include "tscdf_input.h"
 
+int queue_length;
+
 int stream_proc(int nargs, char *args[])
 {
     /* For Timing */
@@ -86,7 +88,8 @@ int stream_proc(int nargs, char *args[])
         sts[i].mutex = semcreate(1);
         sts[i].head = 0;
         sts[i].tail = 0;
-        sts[i].queue = getmem(sizeof(de) * work_queue_depth);
+        queue_length = work_queue_depth + 1
+        sts[i].queue = getmem(sizeof(de) * queue_length);
 
         // Create consumer process
         consumer_name[15] = (char)(48 + i);
@@ -114,7 +117,8 @@ int stream_proc(int nargs, char *args[])
         wait(sts[st].mutex);
         sts[st].queue[sts[st].tail].time = ts;
         sts[st].queue[sts[st].tail].value = v;
-        sts[st].tail += 1;
+        sts[st].tail = (sts[st].tail + 1) % queue_length;
+
         signal(sts[st].mutex);
         signal(sts[st].items);
     }
@@ -141,13 +145,18 @@ int stream_proc(int nargs, char *args[])
 void stream_consumer(int32 id, struct stream *str)
 {
     int32 ts, v;
-    wait(str->items);
-    wait(str->mutex);
-    ts = str->queue[str->head].time;
-    v = str->queue[str->head].value;
-    str->head += 1;
-    signal(str->mutex);
-    signal(str->spaces);
+    ts = 1;
+
+    while (ts != 0)
+    {
+        wait(str->items);
+        wait(str->mutex);
+        ts = str->queue[str->head].time;
+        v = str->queue[str->head].value;
+        str->head = (str->head + 1) % queue_length;
+        signal(str->mutex);
+        signal(str->spaces);
+    }
 
     ptsend(pcport, getpid());
 }
