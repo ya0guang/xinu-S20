@@ -88,7 +88,7 @@ int stream_proc(int nargs, char *args[])
         sts[i].mutex = semcreate(1);
         sts[i].head = 0;
         sts[i].tail = 0;
-        queue_length = work_queue_depth + 1
+        queue_length = work_queue_depth + 1;
         sts[i].queue = getmem(sizeof(de) * queue_length);
 
         // Create consumer process
