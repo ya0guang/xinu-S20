@@ -156,6 +156,7 @@ void stream_consumer(int32 id, struct stream *str)
         str->head = (str->head + 1) % queue_length;
         signal(str->mutex);
         signal(str->spaces);
+        printf("TimeStamp: %d, Value: %d \n", ts, v);
     }
 
     ptsend(pcport, getpid());
