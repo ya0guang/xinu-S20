@@ -153,7 +153,7 @@ void stream_consumer(int32 id, struct stream *str)
 
     int update_times = 0;
     int32 *  qarray;
-    char * output;
+    char output[100];
 
     while (ts != 0)
     {
