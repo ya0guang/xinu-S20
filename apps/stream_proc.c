@@ -1,8 +1,11 @@
 #include <xinu.h>
 #include <stream_proc.h>
 #include "tscdf_input.h"
+#include "tscdf.h"
 
 int queue_length;
+int time_window = 10;
+int output_time = 20;
 
 int stream_proc(int nargs, char *args[])
 {
@@ -22,8 +25,6 @@ int stream_proc(int nargs, char *args[])
     /* default arguments */
     int num_streams = 10;
     int work_queue_depth = 15;
-    int time_window = 10;
-    int output_time = 20;
 
     char usage[] = "Usage: -s num_streams -w work_queue_depth -t time_window -o output_time\n";
 
@@ -89,7 +90,7 @@ int stream_proc(int nargs, char *args[])
         sts[i].head = 0;
         sts[i].tail = 0;
         queue_length = work_queue_depth + 1;
-        sts[i].queue = getmem(sizeof(de) * queue_length);
+        sts[i].queue = (de *)getmem(sizeof(de) * queue_length);
 
         // Create consumer process
         consumer_name[15] = (char)(48 + i);
@@ -101,7 +102,7 @@ int stream_proc(int nargs, char *args[])
     char *a;
     int st, ts, v;
 
-    for (i = 0; i < number_inputs; i++)
+    for (i = 0; i < n_input; i++)
     {
 
         a = (char *)stream_input[i];
@@ -147,8 +148,15 @@ void stream_consumer(int32 id, struct stream *str)
     int32 ts, v;
     ts = 1;
 
+    struct tscdf *tscdf_ptr;
+    tscdf_ptr = tscdf_init(time_window);
+
+    int update_times = 0;
+    int qarray[];
+
     while (ts != 0)
     {
+
         wait(str->items);
         wait(str->mutex);
         ts = str->queue[str->head].time;
@@ -156,7 +164,27 @@ void stream_consumer(int32 id, struct stream *str)
         str->head = (str->head + 1) % queue_length;
         signal(str->mutex);
         signal(str->spaces);
-        printf("TimeStamp: %d, Value: %d \n", ts, v);
+
+        tscdf_update(tscdf_ptr, ts, v);
+        update_times += 1;
+
+        if (update_times == output_time)
+        {
+            update_times = 0;
+
+            qarray = tscdf_quartiles(tscdf_ptr);
+
+            if (qarray == NULL)
+            {
+                kprintf("tscdf_quartiles returned NULL\n");
+                continue;
+            }
+
+            sprintf(output, "s%d: %d %d %d %d %d", id, qarray[0], qarray[1], qarray[2], qarray[3], qarray[4]);
+            kprintf("%s\n", output);
+
+            freemem((char *)qarray, (6 * sizeof(int32)));
+        }
     }
 
     ptsend(pcport, getpid());
