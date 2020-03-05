@@ -244,7 +244,6 @@ static	void	sysinit()
 		semptr->squeue = newqueue();
 	}
 
-<<<<<<< HEAD
 		
 	// /* Initialize futures */
 
@@ -253,10 +252,8 @@ static	void	sysinit()
 	// 	futptr->state = FUTURE_FREE;
 	// }
 
-=======
 
   
->>>>>>> upstream/master
 	/* Initialize buffer pools */
 
 	bufinit();
