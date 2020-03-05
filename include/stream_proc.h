@@ -3,10 +3,6 @@
 
 int32 pcport;
 
-int stream_proc(int nargs, char *args[]);
-
-void stream_consumer(int32 id, struct stream *str);
-
 typedef struct data_element {
   int32 time;
   int32 value;
@@ -20,5 +16,9 @@ struct stream {
   int32 tail;
   struct data_element *queue;
 };
+
+int stream_proc(int nargs, char *args[]);
+
+void stream_consumer(int32 id, struct stream *str);
 
 #endif /*STREAM_PROC_H*/
