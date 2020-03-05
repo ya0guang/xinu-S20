@@ -191,5 +191,6 @@ void stream_consumer(int32 id, struct stream *str)
         }
     }
 
+    printf("stream_consumer exiting\n");
     ptsend(pcport, getpid());
 }
