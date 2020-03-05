@@ -101,7 +101,7 @@ int stream_proc(int nargs, char *args[])
     char *a;
     int st, ts, v;
 
-    for (i = 0; i < 12; i++)
+    for (i = 0; i < number_inputs; i++)
     {
 
         a = (char *)stream_input[i];
