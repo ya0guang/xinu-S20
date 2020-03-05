@@ -1,6 +1,6 @@
 #include <xinu.h>
 #include <stream_proc.h>
-#include <tscdf_input.h>
+#include "tscdf_input.h"
 
 int stream_proc(int nargs, char *args[])
 {
@@ -8,6 +8,10 @@ int stream_proc(int nargs, char *args[])
     ulong secs, msecs, time;
     secs = clktime;
     msecs = clkticks;
+
+    int i;
+    int char* ch;
+    int char c;
 
     /* for streaming */
     struct stream * sts;
@@ -81,7 +85,7 @@ int stream_proc(int nargs, char *args[])
     {
         uint32 pm;
         pm = ptrecv(pcport);
-        printf("process %d exited\n", pm);,l
+        printf("process %d exited\n", pm);
     }
 
     ptdelete(pcport, 0);
@@ -99,6 +103,8 @@ int stream_proc(int nargs, char *args[])
 
 void stream_consumer(int32 id, struct stream *str)
 {
+    char * a;
+    int st, ts, v;
 
     a = (char *)stream_input[i];
     st = atoi(a);
