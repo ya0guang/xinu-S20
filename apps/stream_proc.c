@@ -152,7 +152,8 @@ void stream_consumer(int32 id, struct stream *str)
     tscdf_ptr = tscdf_init(time_window);
 
     int update_times = 0;
-    int qarray[];
+    int32 *  qarray;
+    char * output;
 
     while (ts != 0)
     {
