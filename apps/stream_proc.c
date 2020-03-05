@@ -10,11 +10,10 @@ int stream_proc(int nargs, char *args[])
     msecs = clkticks;
 
     int i;
-    char* ch;
+    char *ch;
     char c;
 
-    /* for streaming */
-    struct stream * sts;
+    char consumer_name[] = "stream_consumer?";
 
     // Parse arguments
 
@@ -68,18 +67,58 @@ int stream_proc(int nargs, char *args[])
         }
     }
 
+    /* for streaming */
+    struct stream sts[num_streams];
+
     if ((pcport = ptcreate(num_streams)) == SYSERR)
     {
         printf("ptcreate failed\n");
         return (-1);
     }
 
-    // Create streams
-
-    sts = getmem(sizeof(struct stream) * num_streams);
-
-
     // Create consumer processes and initialize streams
+
+    for (i = 0; i < num_streams; i++)
+    {
+        // Initialize streams
+        sts[i].spaces = semcreate(work_queue_depth);
+        sts[i].items = semcreate(0);
+        sts[i].mutex = semcreate(1);
+        sts[i].head = 0;
+        sts[i].tail = 0;
+        sts[i].queue = getmem(sizeof(de) * work_queue_depth);
+
+        // Create consumer process
+        consumer_name[15] = (char)(48 + i);
+
+        resume(create((void *)stream_consumer, 4096, 20, consumer_name, 2, i, &sts[i]));
+    }
+
+    // Parse input header file data and populate work queue
+    char *a;
+    int st, ts, v;
+
+    for (i = 0; i < 12; i++)
+    {
+
+        a = (char *)stream_input[i];
+        st = atoi(a);
+        while (*a++ != '\t')
+            ;
+        ts = atoi(a);
+        while (*a++ != '\t')
+            ;
+        v = atoi(a);
+
+        wait(sts[st].spaces);
+        wait(sts[st].mutex);
+        sts[st].queue[tail].time = ts;
+        sts[st].queue[tail].value = v;
+        sts[st].tail += 1;
+        signal(sts[st].mutex);
+        signal(sts[st].items);
+    }
+
     // Use `i` as the stream id.
     for (i = 0; i < num_streams; i++)
     {
@@ -89,8 +128,6 @@ int stream_proc(int nargs, char *args[])
     }
 
     ptdelete(pcport, 0);
-
-    // Parse input header file data and populate work queue
 
     /* timer */
     time = (((clktime * 1000) + clkticks) - ((secs * 1000) + msecs));
@@ -103,17 +140,14 @@ int stream_proc(int nargs, char *args[])
 
 void stream_consumer(int32 id, struct stream *str)
 {
-    char * a;
-    int st, ts, v, i;
-
-    a = (char *)stream_input[i];
-    st = atoi(a);
-    while (*a++ != '\t')
-        ;
-    ts = atoi(a);
-    while (*a++ != '\t')
-        ;
-    v = atoi(a);
+    int32 ts, v;
+    wait(str->items);
+    wait(str->mutex);
+    ts = str->queue[str->head].time;
+    v = str->queue[str->head].value;
+    str->head += 1;
+    signal(str->mutex);
+    signal(str->spaces)
 
     ptsend(pcport, getpid());
 }
