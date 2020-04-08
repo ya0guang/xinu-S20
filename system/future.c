@@ -25,7 +25,7 @@ future_t *future_alloc(future_mode_t mode, uint size, uint nelems)
 
     // memory allocation
     futptr = (struct future_t *)getmem(sizeof(struct future_t));
-    futptr->data = getmem(size);
+    futptr->data = getmem(size * nelems);
     futptr->set_queue = (struct myqueue_t *)getmem(sizeof(struct myqueue_t));
     futptr->get_queue = (struct myqueue_t *)getmem(sizeof(struct myqueue_t));
 
@@ -39,7 +39,12 @@ future_t *future_alloc(future_mode_t mode, uint size, uint nelems)
     futptr->state = FUTURE_EMPTY;
     futptr->mode = mode;
     futptr->size = size;
+    futptr->max_elems = nelems;
+    futptr->tail = 0;
+    futptr->head = 0;
+    futptr->count = 0;
 
+    // initialize vars for FUTURE_QUEUE
     futptr->set_queue->head = 0;
     futptr->set_queue->tail = 0;
     futptr->get_queue->head = 0;
@@ -61,7 +66,7 @@ Returns:
 
 syscall future_free(future_t *f)
 {
-    freemem(f->data, f->size);
+    freemem(f->data, f->size * f->max_elems);
     freemem((char *)f->set_queue, sizeof(struct myqueue_t));
     freemem((char *)f->get_queue, sizeof(struct myqueue_t));
     freemem((char *)f, sizeof(struct future_t));
@@ -92,32 +97,56 @@ syscall future_get(future_t *f, char *out)
     //     return SYSERR;
     // }
 
-    if (f->state == FUTURE_WAITING && f->mode == FUTURE_EXCLUSIVE)
+    if (f->mode != FUTURE_QUEUE)
     {
-        printf("ERROR: Trying to get from an exclusive future more than once\n");
-        return SYSERR;
-    }
-
-    // reschedule
-    if (f->state != FUTURE_READY)
-    {
-        f->pid = currpid;
-        f->state = FUTURE_WAITING;
-        prptr = &proctab[currpid];
-        in_myquue(f->get_queue, currpid);
-        prptr->prstate = PR_WAIT;
-        //printf("DEBUG: pid %d asked for future, but not served...Reschedule\n", currpid);
-        resched();
-    }
-
-    if (f->state == FUTURE_READY)
-    {
-        memcpy((void *)out, (void *)f->data, f->size);
-        if (f->mode == FUTURE_EXCLUSIVE)
+        if (f->state == FUTURE_WAITING && f->mode == FUTURE_EXCLUSIVE)
         {
-            f->state = FUTURE_EMPTY;
+            printf("ERROR: Trying to get from an exclusive future more than once\n");
+            return SYSERR;
         }
-        //printf("DEBUG: pid %d served\n", currpid);
+
+        // reschedule
+        if (f->state != FUTURE_READY)
+        {
+            f->pid = currpid;
+            f->state = FUTURE_WAITING;
+            prptr = &proctab[currpid];
+            in_myqueue(f->get_queue, currpid);
+            prptr->prstate = PR_WAIT;
+            //printf("DEBUG: pid %d asked for future, but not served...Reschedule\n", currpid);
+            resched();
+        }
+
+        if (f->state == FUTURE_READY)
+        {
+            memcpy((void *)out, (void *)f->data, f->size);
+            if (f->mode == FUTURE_EXCLUSIVE)
+            {
+                f->state = FUTURE_EMPTY;
+            }
+            //printf("DEBUG: pid %d served\n", currpid);
+        }
+    }
+    else // FUTURE_QUEUE
+    {
+        // empty data
+        if (f->count == 0)
+        {
+            prptr = &proctab[currpid];
+            in_myqueue(f->get_queue, currpid);
+            prptr->prstate = PR_WAIT;
+            resched();
+        }
+
+        //not empty
+        if (f->count > 0)
+        {
+            char *headelemptr = f->data + (f->head * f->size);
+            memcpy((void *)out, (void *)headelemptr, f->size);
+            f->count -= 1;
+            f->head = (f->head + 1) % (f->max_elems);
+            resume_head_pid(f->set_queue);
+        }
     }
 
     restore(mask);
@@ -148,29 +177,72 @@ syscall future_set(future_t *f, char *in)
     //     return SYSERR;
     // }
 
-    if (f->state == FUTURE_READY && f->mode == FUTURE_EXCLUSIVE)
+    if (f->mode != FUTURE_QUEUE)
     {
-        printf("ERROR: Trying to set a ready future for an exclusive future more than once\n");
-        return SYSERR;
-    }
-
-    memcpy((void *)f->data, (void *)in, f->size);
-
-    if (f->state == FUTURE_WAITING)
-    {
-        f->state = FUTURE_READY;
-        while (size_myqueue(f->get_queue))
+        if (f->state == FUTURE_READY && f->mode == FUTURE_EXCLUSIVE)
         {
-            pid_to_ready = out_myqueue(f->get_queue);
-            ready(pid_to_ready);
+            printf("ERROR: Trying to set a ready future for an exclusive future more than once\n");
+            return SYSERR;
+        }
+
+        memcpy((void *)f->data, (void *)in, f->size);
+
+        if (f->state == FUTURE_WAITING)
+        {
+            f->state = FUTURE_READY;
+            while (size_myqueue(f->get_queue))
+            {
+                pid_to_ready = out_myqueue(f->get_queue);
+                ready(pid_to_ready);
+            }
+        }
+
+        if (f->state == FUTURE_EMPTY)
+        {
+            f->state = FUTURE_READY;
         }
     }
-
-    if (f->state == FUTURE_EMPTY)
+    else // FUTURE_QUEUE
     {
-        f->state = FUTURE_READY;
+        if (f->count == f->max_elems)
+        {
+            struct procent *prptr;
+
+            prptr = &proctab[currpid];
+            in_myqueue(f->set_queue, currpid);
+            prptr->prstate = PR_WAIT;
+            resched();
+        }
+
+        if (f->count < f->max_elems)
+        {
+            char *tailelemptr = f->data + (f->tail * f->size);
+            memcpy(tailelemptr, (void *)in, f->size);
+            f->count += 1;
+            f->tail = (f->tail + 1) % f->max_elems;
+            resume_head_pid(f->get_queue);
+        }
     }
 
     restore(mask);
     return OK;
+}
+
+/*
+ Helper function to resume a single process: the head of get_queue or set_queue
+*/
+syscall resume_head_pid(myqueue_t *q)
+{
+
+    if (size_myqueue(q) >= 1)
+    {
+        pid32 pid_to_ready = out_myqueue(q);
+        ready(pid_to_ready);
+        return OK;
+    }
+
+    else
+    {
+        return 1;
+    }
 }

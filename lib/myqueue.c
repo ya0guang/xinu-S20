@@ -26,7 +26,7 @@ int plus1(int index)
 //     return (index + MYQUEUELEN - 1) % MYQUEUELEN;
 // }
 
-int in_myquue(myqueue_t *q, pid32 p)
+int in_myqueue(myqueue_t *q, pid32 p)
 {
     int my_size;
     if (size_myqueue(q) >= MYQUEUELEN - 1)

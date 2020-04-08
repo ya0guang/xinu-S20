@@ -28,6 +28,12 @@ typedef struct future_t {
   pid32 pid;   // used in FUTURE_EXCLUSIVE
   myqueue_t *set_queue;
   myqueue_t *get_queue;  // used in FUTURE_SHARED
+
+  // new fields
+  uint16 max_elems;
+  uint16 count;
+  uint16 head;
+  uint16 tail;
 } future_t;
 
 // extern struct future_t futab[];
