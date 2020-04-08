@@ -178,6 +178,6 @@ void stream_consumer_future(int32 id, future_t *f)
         }
     }
 
-    kprintf("stream_consumer_future exiting\n");
+    // kprintf("stream_consumer_future exiting\n");
     ptsend(pcport, getpid());
 }
