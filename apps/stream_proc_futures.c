@@ -93,7 +93,7 @@ int stream_proc_futures(int nargs, char *args[])
         // Create consumer process
         consumer_name[15] = (char)(48 + i);
 
-        c_pid = create((void *)stream_consumer, 4096, 20, consumer_name, 2, i, farray[i]);
+        c_pid = create((void *)stream_consumer_future, 4096, 20, consumer_name, 2, i, farray[i]);
         resume(c_pid);
         kprintf("stream_consumer id:%d (pid:%d) \n", i, c_pid);
     }
@@ -125,6 +125,7 @@ int stream_proc_futures(int nargs, char *args[])
         pm = ptrecv(pcport);
         kprintf("process %d exited\n", pm);
     }
+    
     ptdelete(pcport, 0);
 
     // free futures array
