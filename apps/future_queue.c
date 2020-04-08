@@ -3,7 +3,7 @@
 
 void futureq_test1 (int nargs, char *args[]) {
     int three = 3, four = 4, five = 5, six = 6;
-    future *f_queue;
+    future_t *f_queue;
     f_queue = future_alloc(FUTURE_QUEUE, sizeof(int), 3);
 
     resume(create(future_cons, 1024, 20, "fcons6", 1, f_queue));
@@ -19,7 +19,7 @@ void futureq_test1 (int nargs, char *args[]) {
 
 void futureq_test2 (int nargs, char *args[]) {
     int seven = 7, eight = 8, nine=9, ten = 10, eleven = 11;
-    future *f_queue;
+    future_t *f_queue;
     f_queue = future_alloc(FUTURE_QUEUE, sizeof(int), 3);
 
     resume(create(future_prod, 1024, 20, "fprod10", 2, f_queue, (char *)&seven));
@@ -38,7 +38,7 @@ void futureq_test2 (int nargs, char *args[]) {
 
 void futureq_test3 (int nargs, char *args[]) {
     int three = 3, four = 4, five = 5, six = 6;
-    future *f_queue;
+    future_t *f_queue;
     f_queue = future_alloc(FUTURE_QUEUE, sizeof(int), 3);
 
     resume( create(future_cons, 1024, 20, "fcons6", 1, f_queue) );
