@@ -70,7 +70,7 @@ int stream_proc_futures(int nargs, char *args[])
 
     if ((pcport = ptcreate(num_streams)) == SYSERR)
     {
-        printf("ptcreate failed\n");
+        kprintf("ptcreate failed\n");
         return (-1);
     }
 
@@ -95,7 +95,7 @@ int stream_proc_futures(int nargs, char *args[])
 
         c_pid = create((void *)stream_consumer, 4096, 20, consumer_name, 2, i, &farray[i]);
         resume(c_pid);
-        printf("stream_consumer id:%d (pid:%d) \n", i, c_pid);
+        kprintf("stream_consumer id:%d (pid:%d) \n", i, c_pid);
     }
 
     // Parse input header file data and set future values
@@ -123,7 +123,7 @@ int stream_proc_futures(int nargs, char *args[])
     {
         uint32 pm;
         pm = ptrecv(pcport);
-        printf("process %d exited\n", pm);
+        kprintf("process %d exited\n", pm);
     }
     ptdelete(pcport, 0);
 
@@ -176,6 +176,6 @@ void stream_consumer_future(int32 id, future_t *f)
         }
     }
 
-    printf("stream_consumer exiting\n");
+    kprintf("stream_consumer exiting\n");
     ptsend(pcport, getpid());
 }
