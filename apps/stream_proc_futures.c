@@ -153,6 +153,7 @@ void stream_consumer_future(int32 id, future_t *f)
     while (de_to_get.time != 0)
     {
         future_get(f, (char *)&de_to_get);
+        kprintf("[DEBUG] id: %d [GETTING] time: %d, value: %d", id, de_to_get.time, de_to_get.value)
 
         tscdf_update(tscdf_ptr, de_to_get.time, de_to_get.value);
         update_times += 1;
