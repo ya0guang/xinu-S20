@@ -42,7 +42,7 @@ shellcmd xsh_run(int nargs, char *args[])
     if (strncmp(args[0], "futures_test", 12) == 0)
     {
         
-        if (strncmp(args[1], "-f", 2) == 0)
+        if (strncmp(args[1], "-f", 3) == 0)
         {
             resume(create((void *)ffib_bb, 4096, 20, "ffib", 2, nargs, args));
         }
