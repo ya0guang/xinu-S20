@@ -15,3 +15,7 @@ int ffib(int n);
 uint future_prod(future_t *fut, char *value);
 uint future_cons(future_t *fut);
 
+// test for FUTURE_QUEUE
+void futureq_test1 (int nargs, char *args[]);
+void futureq_test2 (int nargs, char *args[]);
+void futureq_test3 (int nargs, char *args[]);

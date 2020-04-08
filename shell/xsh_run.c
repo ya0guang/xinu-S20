@@ -46,13 +46,28 @@ shellcmd xsh_run(int nargs, char *args[])
             resume(create((void *)ffib_bb, 4096, 20, "ffib", 2, nargs, args));
         }
 
-        if (strncmp(args[1], "-pc", 2) == 0)
+        if (strncmp(args[1], "-pc", 3) == 0)
         {
             resume(create((void *)future_prodcons_bb, 4096, 20, "ffib", 2, nargs, args));
         }
+
+        //FUTURE_QUEUE tests
+        if (strncmp(args[1], "-fq1", 4) == 0)
+        {
+            resume(create((void *)futureq_test1, 4096, 20, "ffib", 2, nargs, args));
+        }
+        if (strncmp(args[1], "-fq2", 4) == 0)
+        {
+            resume(create((void *)futureq_test2, 4096, 20, "ffib", 2, nargs, args));
+        }
+        if (strncmp(args[1], "-fq3", 4) == 0)
+        {
+            resume(create((void *)futureq_test3, 4096, 20, "ffib", 2, nargs, args));
+        }
     }
 
-    if (strncmp(args[0], "tscdf", 5) == 0){
+    if (strncmp(args[0], "tscdf", 5) == 0)
+    {
         resume(create((void *)stream_proc, 4096, 20, "stream_proc", 2, nargs, args));
     }
 
@@ -180,7 +195,6 @@ int future_prodcons_bb(int nargs, char *args[])
     resume(create(future_cons, 1024, 20, "fcons4", 1, f_shared));
     resume(create(future_cons, 1024, 20, "fcons5", 1, f_shared));
     resume(create(future_prod, 1024, 20, "fprod2", 2, f_shared, (char *)&two));
-
 }
 
 int mytest_bb()
@@ -227,7 +241,8 @@ int ffib_bb(int nargs, char *args[])
 
         // spawn fib threads and get final value
         // TODO - you need to add your code here
-        for(i = 0; i<= fib; i++) {
+        for (i = 0; i <= fib; i++)
+        {
             resume(create(ffib, 1024, 20, "ffib", 1, i));
         }
 
