@@ -3,9 +3,6 @@
 // #include "tscdf_input.h"
 #include "tscdf.h"
 
-int queue_length;
-int time_window = 10;
-int output_time = 20;
 
 int stream_proc_futures(int nargs, char *args[])
 {
