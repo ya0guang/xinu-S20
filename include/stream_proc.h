@@ -4,8 +4,8 @@
 int32 pcport;
 
 int queue_length;
-int time_window = 10;
-int output_time = 20;
+int time_window;
+int output_time;
 
 typedef struct data_element {
   int32 time;
