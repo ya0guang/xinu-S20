@@ -133,7 +133,7 @@ int stream_proc_futures(int nargs, char *args[])
     // free futures array
     for (i = 0; i < num_streams; i++)
     {
-        future_free(farray[i])
+        future_free(farray[i]);
     }
 
     time = (((clktime * 1000) + clkticks) - ((secs * 1000) + msecs));
