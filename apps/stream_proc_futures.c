@@ -95,7 +95,7 @@ int stream_proc_futures(int nargs, char *args[])
 
         c_pid = create((void *)stream_consumer_future, 4096, 20, consumer_name, 2, i, farray[i]);
         resume(c_pid);
-        kprintf("stream_consumer id:%d (pid:%d) \n", i, c_pid);
+        kprintf("stream_consumer_future id:%d (pid:%d) \n", i, c_pid);
     }
 
     // Parse input header file data and set future values
@@ -178,6 +178,6 @@ void stream_consumer_future(int32 id, future_t *f)
         }
     }
 
-    kprintf("stream_consumer exiting\n");
+    kprintf("stream_consumer_future exiting\n");
     ptsend(pcport, getpid());
 }
