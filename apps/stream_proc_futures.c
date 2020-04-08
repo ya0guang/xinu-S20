@@ -155,7 +155,7 @@ void stream_consumer_future(int32 id, future_t *f)
 
     while (de_to_get.time != 0)
     {
-        de_to_get = future_get(f, (char *)&de_to_get);
+        future_get(f, (char *)&de_to_get);
 
         tscdf_update(tscdf_ptr, de_to_get.time, de_to_get.value);
         update_times += 1;
