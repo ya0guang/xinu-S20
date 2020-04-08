@@ -16,7 +16,7 @@ int stream_proc_futures(int nargs, char *args[])
     char *ch;
     char c;
 
-    char consumer_name[] = "stream_consumer?";
+    char consumer_name[] = "stream_consumer_future?";
 
     // Parse arguments
 
