@@ -3,6 +3,7 @@
         "xinu.h": "c",
         "conf.h": "c",
         "future_test.h": "c",
-        "stream_proc.h": "c"
+        "stream_proc.h": "c",
+        "tscdf.h": "c"
     }
 }
