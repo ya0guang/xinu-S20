@@ -75,7 +75,7 @@ int stream_proc_futures(int nargs, char *args[])
     }
 
     // Create array to hold `n_streams` number of futures
-    future_t *farray[num_streams];
+    future_t * farray[num_streams];
 
     // Create consumer processes and allocate futures
     // Use `i` as the stream id.
@@ -93,7 +93,7 @@ int stream_proc_futures(int nargs, char *args[])
         // Create consumer process
         consumer_name[15] = (char)(48 + i);
 
-        c_pid = create((void *)stream_consumer, 4096, 20, consumer_name, 2, i, &farray[i]);
+        c_pid = create((void *)stream_consumer, 4096, 20, consumer_name, 2, i, farray[i]);
         resume(c_pid);
         kprintf("stream_consumer id:%d (pid:%d) \n", i, c_pid);
     }
@@ -153,7 +153,7 @@ void stream_consumer_future(int32 id, future_t *f)
     while (de_to_get.time != 0)
     {
         future_get(f, (char *)&de_to_get);
-        kprintf("[DEBUG] id: %d [GETTING] time: %d, value: %d", id, de_to_get.time, de_to_get.value)
+        kprintf("[DEBUG] id: %d [GETTING] time: %d, value: %d", id, de_to_get.time, de_to_get.value);
 
         tscdf_update(tscdf_ptr, de_to_get.time, de_to_get.value);
         update_times += 1;
