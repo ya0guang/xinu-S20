@@ -17,8 +17,14 @@ struct stream {
   struct data_element *queue;
 };
 
+//APIs in stream_proc.c
 int stream_proc(int nargs, char *args[]);
-
 void stream_consumer(int32 id, struct stream *str);
+
+//FUTURE_QUEUE APIs in stream_proc_futures.c
+int stream_proc_futures(int nargs, char *args[]);
+void stream_consumer_future(int32 id, future_t *f);
+
+
 
 #endif /*STREAM_PROC_H*/

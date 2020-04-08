@@ -55,15 +55,15 @@ shellcmd xsh_run(int nargs, char *args[])
         //FUTURE_QUEUE tests
         if (strncmp(args[1], "-fq1", 4) == 0)
         {
-            resume(create((void *)futureq_test1, 4096, 20, "ffib", 2, nargs, args));
+            resume(create((void *)futureq_test1, 4096, 20, "futureq_test1", 2, nargs, args));
         }
         if (strncmp(args[1], "-fq2", 4) == 0)
         {
-            resume(create((void *)futureq_test2, 4096, 20, "ffib", 2, nargs, args));
+            resume(create((void *)futureq_test2, 4096, 20, "futureq_test2", 2, nargs, args));
         }
         if (strncmp(args[1], "-fq3", 4) == 0)
         {
-            resume(create((void *)futureq_test3, 4096, 20, "ffib", 2, nargs, args));
+            resume(create((void *)futureq_test3, 4096, 20, "futureq_test3", 2, nargs, args));
         }
 
     }
@@ -71,6 +71,11 @@ shellcmd xsh_run(int nargs, char *args[])
     if (strncmp(args[0], "tscdf", 5) == 0)
     {
         resume(create((void *)stream_proc, 4096, 20, "stream_proc", 2, nargs, args));
+    }
+
+    if (strncmp(args[0], "tscdf_fq", 8) == 0)
+    {
+        resume(create((void *)stream_proc_futures, 4096, 20, "tscdf_fq", 2, nargs, args));
     }
 
     if (strncmp(args[0], "test", 4) == 0)
