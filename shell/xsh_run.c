@@ -4,6 +4,7 @@
 #include <prodcons_bb.h>
 #include <future_test.h>
 #include <stream_proc.h>
+#include <fs.h>
 
 // definition of array, semaphores and indices
 
