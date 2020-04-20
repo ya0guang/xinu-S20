@@ -1,3 +1,7 @@
+#ifndef FS
+#define FS
+#endif
+
 #ifndef FS_H
 #define FS_H
 
