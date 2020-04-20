@@ -1,7 +1,3 @@
-#ifndef FS
-#define FS
-#endif
-
 #ifndef FS_H
 #define FS_H
 
@@ -103,5 +99,8 @@ int bs_bwrite(int bsdev, int block, int offset, void * buf, int len);
 /* debugging functions */
 void fs_printfreemask(void);
 void fs_print_fsd(void);
+
+/* Test */
+uint fstest(int nargs, char *args[]);
 
 #endif /* FS_H */
