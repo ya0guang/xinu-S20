@@ -83,6 +83,10 @@ shellcmd xsh_run(int nargs, char *args[])
         mytest_bb();
     }
 
+    if (strncmp(args[0], "fstest", 7) == 0) {
+        resume(create((void *)fstest, 4096, 20, "fstest", 2, nargs, args));
+    }
+
     return 0;
 }
 
