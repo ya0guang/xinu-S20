@@ -267,10 +267,13 @@ int fs_open(char *filename, int flags)
   int i, fd;
   int dir_index;
 
+  //TODO: OPEN TWICE
+
   // find the entry index in root_dir
   dir_index = fs_get_entry_index(filename);
   if (dir_index == SYSERR)
   {
+    kprintf("OPEN FAIL\n");
     return SYSERR;
   }
 
@@ -498,6 +501,7 @@ int fs_link(char *src_filename, char *dst_filename)
   src_dir_index = fs_get_entry_index(src_filename);
   if (src_dir_index > DIRECTORY_SIZE)
   {
+    kprintf("Link Fail\n");
     return SYSERR;
   }
 

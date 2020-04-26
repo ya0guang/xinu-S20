@@ -6,7 +6,7 @@
 #define SIZE 1200
 
 uint fstest(int nargs, char *args[]) {
-    int rval;
+    int rval, rval2;
     int fd, i, j;
     char *buf1, *buf2, *buf3;
     
@@ -83,16 +83,16 @@ uint fstest(int nargs, char *args[]) {
         
     printf("\n\rContent of file %s",buf2);
     
-    rval = fs_close(fd);
-    if(rval != OK)
+    rval2 = fs_close(fd);
+    if(rval2 != OK)
     {
         printf("\n\rReturn val for fclose : %d",rval);
     }
 
 // Test 2
    // Link dst file to file from above
-   rval = fs_link("Test_File", "Dst_Test_File");
-   if(rval != OK)
+   rval2 = fs_link("Test_File", "Dst_Test_File");
+   if(rval2 != OK)
    {
        printf("\n\r File link failed");
        goto clean_up;
@@ -110,15 +110,15 @@ uint fstest(int nargs, char *args[]) {
        
    printf("\n\rContent of file %s",buf3);
 
-   rval = fs_close(fd1);
-   if(rval != OK)
+   rval2 = fs_close(fd1);
+   if(rval2 != OK)
    {
        printf("\n\rReturn val for fclose : %d",rval);
    }
 
 // Test 3
-   rval = fs_unlink("Dst_Test_File");
-   if(rval != OK)
+   rval2 = fs_unlink("Dst_Test_File");
+   if(rval2 != OK)
    {
        printf("\n\r File unlink failed");
        goto clean_up;
