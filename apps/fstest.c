@@ -272,6 +272,7 @@ uint fstest(int nargs, char *args[])
     }
     int tfd = fs_open("New_File", 2);
     char tbuf[5];
+    char nbuf[5];
     tbuf[0] = 'h';
     tbuf[1] = 'e';
     tbuf[2] = 'l';
@@ -295,13 +296,20 @@ uint fstest(int nargs, char *args[])
         goto clean_up;
     }
 
-    printf("\n\rContent of file %s", buf3);
+    printf("\n\rContent of file [New_File] %s", buf3);
 
     rval2 = fs_close(tfd);
     if (rval2 != OK)
     {
         printf("\n\rReturn val for fclose : %d", rval);
     }
+
+    tfd = fs_open("Test_File", 2);
+    rval2 = fs_read(tfd, nbuf, strlen(tbuf));
+    printf("\n\rContent of file [Test_File] %s", nbuf);
+    
+    tfd = fs_open("New_File", 2);
+    
     //SNIPPET END
     int fd1 = fs_open("Dst_Test_File", 0);
     //read the file
