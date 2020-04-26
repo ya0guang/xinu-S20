@@ -312,8 +312,9 @@ int fs_create(char *filename, int mode)
   oft[fd].in = inode_new;
   oft[fd].flag = O_RDWR;
 
-  printf("oft[%d]: in.id: %d, filename: %s, dirent num: %d \n",
-         fd, oft[fd].in.id, oft[fd].de->name, oft[fd].de->inode_num);
+  //DEBUG
+  // kprintf("oft[%d]: in.id: %d, filename: %s, dirent num: %d \n",
+  //        fd, oft[fd].in.id, oft[fd].de->name, oft[fd].de->inode_num);
 
   return fd;
 }
@@ -418,7 +419,7 @@ int fs_write(int fd, void *buf, int nbytes)
   fp = oft[fd].fileptr - fp;
 
   //DEBUG INFO
-  kprintf("Bytes Written: %d \n", fp);
+  // kprintf("Bytes Written: %d \n", fp);
 
   return fp;
 }
