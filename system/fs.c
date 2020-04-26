@@ -520,6 +520,42 @@ int fs_link(char *src_filename, char *dst_filename)
 
 int fs_unlink(char *filename)
 {
-  return SYSERR;
+  int dir_index;
+  struct inode inode_current;
+  int inode_num;
+  dir_index = fs_get_entry_index(filename);
+  if (dir_index == SYSERR)
+  {
+    kprintf("unlink ERROR: no such file or dir\n");
+    return SYSERR;
+  }
+
+  // set inode_num to 0
+  inode_num = fsd.root_dir.entry[dir_index].inode_num;
+  fsd.root_dir.entry[dir_index].inode_num = 0;
+
+  // operation on inode
+  fs_get_inode_by_num(0, inode_num, &inode_current);
+  inode_current.nlink -= 1;
+  // delete inode info
+  if (inode_current.nlink == 0)
+  {
+    inode_current.id = 0;
+    inode_current.type = 0;
+    for (i = 0; i < INODEBLOCKS; i += 1)
+    {
+      if (inode_current.blocks[i] == 0)
+      {
+        break;
+      }
+      else
+      {
+        fs_clearmaskbit(inode_current.blocks[i]);
+      }
+    }
+    inode_current.size = 0;
+  }
+
+  return OK;
 }
 #endif /* FS */
