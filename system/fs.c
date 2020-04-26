@@ -553,12 +553,10 @@ int fs_write_all(int fd, void *buf, int nbytes)
 // return number of bytes written
 int fs_write(int fd, void *buf, int nbytes)
 {
-  int remain = nbytes;
-  int free_blk_num = fsd.nblocks + 1;
   int bytes_write;
-  void *bufptr = buf;
-  int i = INODEBLOCKS + 2;
-  int inode_blk_index = 0;
+  // void *bufptr = buf;
+  // int i = INODEBLOCKS + 2;
+  // int inode_blk_index = 0;
   int fp = oft[fd].fileptr;
 
   //TODO: find the position of fileptr and start write
@@ -569,16 +567,16 @@ int fs_write(int fd, void *buf, int nbytes)
     return SYSERR;
   }
 
-  fs_write_all(fd, buf, nbytes);
+  bytes_write = fs_write_all(fd, buf, nbytes);
 
   //write inode to disk
   fs_put_inode_by_num(0, oft[fd].de->inode_num, &oft[fd].in);
-  fp = oft[fd].fileptr - fp;
+  // fp = oft[fd].fileptr - fp;
 
   //DEBUG INFO
-  // kprintf("Bytes Written: %d \n", fp);
+  kprintf("Bytes Written: %d \n", bytes_write);
 
-  return fp;
+  return bytes_write;
 }
 
 int fs_link(char *src_filename, char *dst_filename)
