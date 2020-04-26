@@ -528,10 +528,13 @@ int fs_write_all(int fd, void *buf, int nbytes)
     }
 
     bs_bwrite(0, free_blk_num, 0, bufptr, bytes_write);
+    //DEBUG
+    kprintf("\nWriting Block: %d\n", free_blk_num);
     oft[fd].fileptr += bytes_write;
     oft[fd].in.blocks[inode_blk_index++] = free_blk_num;
     oft[fd].in.size += bytes_write;
     fs_setmaskbit(free_blk_num);
+    free_blk_num = fsd.nblocks + 1;
   }
 
   //write inode to disk
