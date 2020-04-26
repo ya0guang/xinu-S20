@@ -60,9 +60,9 @@ uint fstest(int nargs, char *args[])
 
     for (tmp = 0; tmp < size_test; tmp += 1)
     {
-        j = i % (127 - 33);
-        j = j + 33;
-        write_string[i] = (char)j;
+        tmp = tmp % (127 - 33);
+        tmp = tmp + 33;
+        write_string[i] = (char)tmp;
     }
 
     fdt1 = fs_create("rw_test", O_CREAT);
