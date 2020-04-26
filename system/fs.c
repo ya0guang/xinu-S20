@@ -492,6 +492,7 @@ int fs_write_all(int fd, void *buf, int nbytes)
   void *bufptr = buf;
   int i = INODEBLOCKS + 2;
   int inode_blk_index = 0;
+  int fp = oft[fd].fileptr;
 
 
   if ((oft[fd].flag == O_RDONLY) || (oft[fd].in.type == INODE_TYPE_DIR))
