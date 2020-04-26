@@ -263,15 +263,31 @@ int fs_get_entry_index(char *filename)
   return dir_index;
 }
 
+int fs_get_free_fd()
+{
+  int i;
+  for (i = 0; i < NUM_FD; i += 1)
+  {
+    if (oft[i].state == FSTATE_CLOSED)
+    {
+      return i;
+    }
+  }
+  kprintf("No free opened file table entry \n");
+  return SYSERR;
+}
+
 //return fd
 int fs_open(char *filename, int flags)
 {
   int i, fd;
   int dir_index;
 
-  //TODO: OPEN TWICE
-  for(i = 0; i < NUM_FD; i += 1){
-    if(oft[i].state == FSTATE_OPEN && (strncmp(oft[i].de->name, filename, FILENAMELEN) == 0)){
+  // Validity Check
+  for (i = 0; i < NUM_FD; i += 1)
+  {
+    if (oft[i].state == FSTATE_OPEN && (strncmp(oft[i].de->name, filename, FILENAMELEN) == 0))
+    {
       kprintf("File has been opened!");
       return SYSERR;
     }
@@ -286,7 +302,11 @@ int fs_open(char *filename, int flags)
   }
 
   //set the open file table
-  fd = next_open_fd++;
+  fd = fs_get_free_fd();
+  if (df == SYSERR)
+  {
+    return SYSERR;
+  }
   oft[fd].state = FSTATE_OPEN;
   oft[fd].fileptr = 0;
   oft[fd].flag = flags;
@@ -298,9 +318,13 @@ int fs_open(char *filename, int flags)
 
 int fs_close(int fd)
 {
-  //TODO: Validity Check
+  // Validity Check
+  if(oft[fd].state == FSTATE_CLOSED){
+    kprintf("File has already been closed \n");
+    return SYSERR;
+  }
 
-  //write changes of inode into the block
+  // write changes of inode into the block
   fs_put_inode_by_num(0, oft[fd].de->inode_num, &oft[fd].in);
   oft[fd].state = FSTATE_CLOSED;
 
@@ -363,7 +387,10 @@ int fs_create(char *filename, int mode)
   fs_put_inode_by_num(0, free_inode_number, &inode_new);
 
   // open it in oft
-  fd = next_open_fd++;
+  fd = fs_get_free_fd();
+  if(fd == SYSERR) {
+    return SYSERR;
+  }
   oft[fd].state = FSTATE_OPEN;
   oft[fd].fileptr = 0;
   oft[fd].de = &fsd.root_dir.entry[free_dir_index];
@@ -379,14 +406,24 @@ int fs_create(char *filename, int mode)
 
 int fs_seek(int fd, int offset)
 {
-  //TODO: Validity check
+  // Validity check
+  if(oft[fd].state == FSTATE_CLOSED){
+    kprintf("Invalid file: file is closed\n");
+    return SYSERR;
+  }
   oft[fd].fileptr += offset;
   return OK;
 }
 
 int fs_read(int fd, void *buf, int nbytes)
 {
-  //TODO: Validity check
+  // Validity check
+  if ((oft[fd].state == FSTATE_CLOSED) || (oft[fd].flag == O_WRONLY))
+  {
+    kprintf("Invlaid file to tead");
+    return SYSERR;
+  }
+
   char read_buf[fsd.blocksz * INODEBLOCKS];
   int read_size = 0;
   int to_read = 0;
