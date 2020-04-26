@@ -302,14 +302,17 @@ int fs_create(char *filename, int mode)
   inode_new.size = 0;
   inode_new.type = INODE_TYPE_FILE;
 
+  fs_put_inode_by_num(0, free_inode_number, &inode_new);
+
   // open it in oft
   fd = next_open_fd++;
   oft[fd].state = FSTATE_OPEN;
   oft[fd].fileptr = 0;
   oft[fd].de = &fsd.root_dir.entry[free_dir_index];
   oft[fd].in = inode_new;
+  oft[fd].flag = O_RDWR;
 
-  printf("oft[%d]: in.id: %d, filename: %s, diren\t num: %d",
+  printf("oft[%d]: in.id: %d, filename: %s, dirent num: %d \n",
          fd, oft[fd].in.id, oft[fd].de->name, oft[fd].de->inode_num);
 
   return fd;
@@ -317,7 +320,9 @@ int fs_create(char *filename, int mode)
 
 int fs_seek(int fd, int offset)
 {
-  return SYSERR;
+  //TODO: Valid fd check
+  oft[fd].fileptr += offset;
+  return OK;
 }
 
 int fs_read(int fd, void *buf, int nbytes)
@@ -328,7 +333,66 @@ int fs_read(int fd, void *buf, int nbytes)
 // return number of bytes written
 int fs_write(int fd, void *buf, int nbytes)
 {
-  return SYSERR;
+  int remain = nbytes;
+  int free_blk_num = fsd.nblocks + 1;
+  int bytes_write;
+  void *bufptr = buf;
+  int i = INODEBLOCKS + 2;
+  int inode_blk_index = 0;
+  int fp = oft[fd].fileptr;
+  
+  //TODO: find the position of fileptr and start write
+
+  if((oft[fd].flag == O_RDONLY) || (oft[fd].in.type == INODE_TYPE_DIR)) {
+    kprintf("Writing a Read Only file / dir is NOT allowed! \n");
+    return SYSERR;
+  }
+
+  while (remain > 0)
+  {
+    //find a free block
+    for (; i <= fsd.nblocks; i += 1)
+    {
+      if (fs_getmaskbit(i) == 0)
+      {
+        free_blk_num = i;
+        break;
+      }
+    }
+
+    if (i > fsd.nblocks)
+    {
+      kprintf("No Free Block to write! \n");
+      return SYSERR;
+    }
+
+    //determain the length about to write
+    if (remain >= 512)
+    {
+      bytes_write = 512;
+      remain = remain - 512;
+    }
+    else
+    {
+      bytes_write = remain;
+      remain = 0;
+    }
+
+    bs_bwrite(0, free_blk_num, 0, bufptr, bytes_write);
+    oft[fd].fileptr += bytes_write;
+    oft[fd].in.blocks[inode_blk_index++] = free_blk_num;
+    oft[fd].in.size += bytes_write;
+    fs_setmaskbit(free_blk_num);
+  }
+
+  //write inode to disk
+  fs_put_inode_by_num(0, oft[fd].de->inode_num, &oft[fd].in);
+  fp = oft[fd].fileptr - fp;
+
+  //DEBUG INFO
+  kprintf("Bytes Written: %d \n", fp);
+
+  return fp;
 }
 
 int fs_link(char *src_filename, char *dst_filename)
