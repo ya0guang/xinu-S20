@@ -94,7 +94,11 @@ uint fstest(int nargs, char *args[])
         printf("\n\rReturn val for fclose : %d", rval);
     }
 
+    // My test of read & open
+    freemem(buf4, SIZE);
+    buf4 = getmem(SIZE * sizeof(char));
     rval = fs_open("Test_File", O_RDONLY);
+    printf("fd: %d \n", rval);
     rval = fs_read(rval, buf4, 300);
     buf4[300] = '\0';
     printf("\n\rContent of file [1st] %s", buf4);
@@ -150,6 +154,7 @@ clean_up:
     freemem(buf1, SIZE);
     freemem(buf2, SIZE);
     freemem(buf3, SIZE);
+    freemem(buf4, SIZE);
 
 #else
     printf("No filesystem support\n");
