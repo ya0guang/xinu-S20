@@ -264,6 +264,12 @@ uint fstest(int nargs, char *args[])
     }
 
     // ADDED SNIPPET
+    rval2 = fs_link("Test_File", "New_File");
+    if (rval2 != OK)
+    {
+        printf("\n\r File link failed");
+        goto clean_up;
+    }
     int tfd = fs_open("New_File", 2);
     char tbuf[5];
     tbuf[0] = 'h';
