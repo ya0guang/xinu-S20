@@ -319,7 +319,8 @@ int fs_open(char *filename, int flags)
 int fs_close(int fd)
 {
   // Validity Check
-  if(oft[fd].state == FSTATE_CLOSED){
+  if (oft[fd].state == FSTATE_CLOSED)
+  {
     kprintf("File has already been closed \n");
     return SYSERR;
   }
@@ -388,7 +389,8 @@ int fs_create(char *filename, int mode)
 
   // open it in oft
   fd = fs_get_free_fd();
-  if(fd == SYSERR) {
+  if (fd == SYSERR)
+  {
     return SYSERR;
   }
   oft[fd].state = FSTATE_OPEN;
@@ -407,7 +409,8 @@ int fs_create(char *filename, int mode)
 int fs_seek(int fd, int offset)
 {
   // Validity check
-  if(oft[fd].state == FSTATE_CLOSED){
+  if (oft[fd].state == FSTATE_CLOSED)
+  {
     kprintf("Invalid file: file is closed\n");
     return SYSERR;
   }
@@ -415,16 +418,8 @@ int fs_seek(int fd, int offset)
   return OK;
 }
 
-int fs_read(int fd, void *buf, int nbytes)
+int fs_read_all(int fd, void *buf)
 {
-  // Validity check
-  if ((oft[fd].state == FSTATE_CLOSED) || (oft[fd].flag == O_WRONLY))
-  {
-    kprintf("Invlaid file to tead");
-    return SYSERR;
-  }
-
-  char read_buf[fsd.blocksz * INODEBLOCKS];
   int read_size = 0;
   int to_read = 0;
   int read_blks = 0;
@@ -443,9 +438,45 @@ int fs_read(int fd, void *buf, int nbytes)
 
     // read from block
     blk_index = oft[fd].in.blocks[read_blks++];
-    bs_bread(0, blk_index, 0, &read_buf[read_size], to_read);
+    bs_bread(0, blk_index, 0, &buf[read_size], to_read);
     read_size += to_read;
   }
+
+  return read_size;
+}
+
+int fs_read(int fd, void *buf, int nbytes)
+{
+  // Validity check
+  if ((oft[fd].state == FSTATE_CLOSED) || (oft[fd].flag == O_WRONLY))
+  {
+    kprintf("Invlaid file to tead");
+    return SYSERR;
+  }
+
+  char read_buf[fsd.blocksz * INODEBLOCKS];
+  int read_size = 0;
+  // int to_read = 0;
+  // int read_blks = 0;
+  // int blk_index = 0;
+
+  // while (read_size != oft[fd].in.size)
+  // {
+  //   if ((oft[fd].in.size - read_size) > 512)
+  //   {
+  //     to_read = 512;
+  //   }
+  //   else
+  //   {
+  //     to_read = oft[fd].in.size - read_size;
+  //   }
+
+  //   // read from block
+  //   blk_index = oft[fd].in.blocks[read_blks++];
+  //   bs_bread(0, blk_index, 0, &read_buf[read_size], to_read);
+  //   read_size += to_read;
+  // }
+  read_size = fs_read_all(fd, read_buf);
 
   memcpy(buf, &read_buf[oft[fd].fileptr], nbytes);
   oft[fd].fileptr += nbytes;
