@@ -40,7 +40,7 @@ int fs_fileblock_to_diskblock(int dev, int fd, int fileblock)
     printf("No indirect block support\n");
     return SYSERR;
   }
-
+ 
   diskblock = oft[fd].in.blocks[fileblock]; //get the logical block address
 
   return diskblock;
@@ -501,6 +501,7 @@ int fs_write_all(int fd, void *buf, int nbytes)
     return SYSERR;
   }
 
+  // write nbytes to free blocks & update inode.blocks
   while (remain > 0)
   {
     //find a free block
@@ -536,7 +537,6 @@ int fs_write_all(int fd, void *buf, int nbytes)
     oft[fd].in.blocks[inode_blk_index++] = free_blk_num;
     oft[fd].in.size += bytes_write;
     fs_setmaskbit(free_blk_num);
-
   }
 
   //write inode to disk
@@ -553,12 +553,10 @@ int fs_write_all(int fd, void *buf, int nbytes)
 int fs_write(int fd, void *buf, int nbytes)
 {
   int bytes_write;
-  // void *bufptr = buf;
-  // int i = INODEBLOCKS + 2;
-  // int inode_blk_index = 0;
+  char write_buf[fsd.blocksz * INODEBLOCKS];
+
   int fp = oft[fd].fileptr;
 
-  //TODO: find the position of fileptr and start write
 
   if ((oft[fd].flag == O_RDONLY) || (oft[fd].in.type == INODE_TYPE_DIR))
   {
@@ -566,7 +564,16 @@ int fs_write(int fd, void *buf, int nbytes)
     return SYSERR;
   }
 
-  bytes_write = fs_write_all(fd, buf, nbytes);
+  //TODO: find the position of fileptr and refill the buffer
+  fs_read_all(fd, write_buf);
+  
+  memcpy(&write_buf[fp], buf, nbytes);
+  fp += nbytes;
+  
+  //TODO: clear bit mask after full read
+
+
+  bytes_write = fs_write_all(fd, write_buf, fp);
 
   //write inode to disk
   fs_put_inode_by_num(0, oft[fd].de->inode_num, &oft[fd].in);
