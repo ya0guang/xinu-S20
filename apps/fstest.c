@@ -58,7 +58,7 @@ uint fstest(int nargs, char *args[])
     char write_string[1000] = {'\0'};
     char read_string[1000] = {'\0'};
 
-    for(tmp = 0; tmp < size_test, tmp += 1) {
+    for(tmp = 0; tmp < size_test; tmp += 1) {
         write_string[tmp] = 'A';
     }
 
