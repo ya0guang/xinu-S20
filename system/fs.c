@@ -438,6 +438,9 @@ int fs_read_all(int fd, void *buf, bool clear)
 
     // read from block
     blk_index = oft[fd].in.blocks[read_blks++];
+    
+    //DEBUG
+    kprintf("\nrReading block: %d\n", blk_index);
     if (clear)
     {
       fs_clearmaskbit(blk_index);
@@ -682,7 +685,8 @@ void fs_print_inode_info(int inode_num)
   }
 }
 
-void fs_print_ftable_info(int fd){
+void fs_print_ftable_info(int fd)
+{
   ;
 }
 
