@@ -270,6 +270,12 @@ int fs_open(char *filename, int flags)
   int dir_index;
 
   //TODO: OPEN TWICE
+  for(i = 0; i < NUM_FD; i += 1){
+    if(oft[i].state == FSTATE_OPEN && (strncmp(oft[i].de->name, filename, FILENAMELEN) == 0)){
+      kprintf("File has been opened!");
+      return SYSERR;
+    }
+  }
 
   // find the entry index in root_dir
   dir_index = fs_get_entry_index(filename);
