@@ -263,6 +263,40 @@ uint fstest(int nargs, char *args[])
         printf("\n\r File link failed");
         goto clean_up;
     }
+
+    // ADDED SNIPPET
+       int tfd = fs_open("New_File", 2);
+   tbuf[0] = 'h';
+   tbuf[1] = 'e';
+   tbuf[2] = 'l';
+   tbuf[3] = '\0';
+   rval2 = fs_write(tfd, tbuf, strlen(tbuf));
+
+   if(rval2 == 0)
+   {
+       printf("\n\r File write failed");
+       goto clean_up;
+   }
+
+   fs_seek(tfd, -rval2);
+
+   rval2 = fs_read(tfd, buf3, strlen(tbuf));
+   buf3[rval2] = '\0';
+
+   if(rval2 == 0)
+   {
+       printf("\n\r File read failed");
+       goto clean_up;
+   }
+
+   printf("\n\rContent of file %s", buf3);
+
+   rval2 = fs_close(tfd);
+   if(rval2 != OK)
+   {
+       printf("\n\rReturn val for fclose : %d", rval);
+   }
+   //SNIPPET END
     int fd1 = fs_open("Dst_Test_File", 0);
     //read the file
     rval = fs_read(fd1, buf3, rval);
