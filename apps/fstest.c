@@ -62,7 +62,7 @@ uint fstest(int nargs, char *args[])
     {
         tmp = tmp % (127 - 33);
         tmp = tmp + 33;
-        write_string[i] = (char)tmp;
+        write_string[tmp] = (char)tmp;
     }
 
     fdt1 = fs_create("rw_test", O_CREAT);
