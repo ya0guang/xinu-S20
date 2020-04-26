@@ -559,7 +559,7 @@ int fs_write(int fd, void *buf, int nbytes)
   fp += nbytes;
   
   //DEBUG
-  printf("fp: %d", fp);
+  printf("fp: %d\n", fp);
   //fp = 1200
 
   bytes_write = fs_write_all(fd, write_buf, fp);

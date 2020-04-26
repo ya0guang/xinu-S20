@@ -94,6 +94,23 @@ uint fstest(int nargs, char *args[])
         printf("\n\rReturn val for fclose : %d", rval);
     }
 
+    rval = fs_open("Test_File", O_RDONLY);
+    rval = fs_read(rval, buf4, 300);
+    buf4[300] = '\0';
+    printf("\n\rContent of file [1st] %s", buf4);
+    rval = fs_read(rval, buf4, 300);
+    buf4[300] = '\0';
+    printf("\n\rContent of file [2nd] %s", buf4);
+    rval = fs_read(rval, buf4, 300);
+    buf4[300] = '\0';
+    printf("\n\rContent of file [3rd] %s", buf4);
+    rval = fs_read(rval, buf4, 300);
+    buf4[300] = '\0';
+    printf("\n\rContent of file [4th] %s", buf4);
+    rval = fs_read(rval, buf4, 300);
+    buf4[300] = '\0';
+    printf("\n\rContent of file [5th] %s", buf4);
+
     // Test 2
     // Link dst file to file from above
     rval2 = fs_link("Test_File", "Dst_Test_File");
