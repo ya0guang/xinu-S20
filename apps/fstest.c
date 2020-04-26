@@ -62,7 +62,7 @@ uint fstest(int nargs, char *args[])
     }
 
     rval = fs_write(fd, buf1, SIZE / 2);
-    rval = fs_write(fd, &buf1[SIZE / 2)], SIZE / 2);
+    rval = fs_write(fd, &buf1[SIZE / 2], SIZE / 2);
     if (rval == 0 || rval != SIZE / 2)
     {
         printf("\n\r File write failed");
