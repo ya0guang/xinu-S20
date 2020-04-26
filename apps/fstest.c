@@ -97,7 +97,7 @@ uint fstest(int nargs, char *args[])
     // My test of read & open
     freemem(buf4, SIZE);
     buf4 = getmem(SIZE * sizeof(char));
-    rval = fs_open("Test_File", O_RDONLY);
+    rval = fs_open("Test_File", O_RDWR);
     printf("fd: %d \n", rval);
     rval2 = fs_read(rval, buf4, 300);
     printf("rval: %d\n", rval);
@@ -115,7 +115,7 @@ uint fstest(int nargs, char *args[])
     rval2 = fs_read(rval, buf4, 300);
     buf4[300] = '\0';
     printf("\n\rContent of file [5th] %s", buf4);
-    
+
     fs_write(rval, buf4, 300);
     fs_seek(fd, -SIZE);
     rval2 = fs_read(rval, buf4, 300);
