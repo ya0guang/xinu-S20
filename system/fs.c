@@ -571,8 +571,6 @@ int fs_write(int fd, void *buf, int nbytes)
   fp += nbytes;
   
   //TODO: clear bit mask after full read
-
-
   bytes_write = fs_write_all(fd, write_buf, fp);
 
   //write inode to disk
@@ -581,6 +579,8 @@ int fs_write(int fd, void *buf, int nbytes)
 
   //DEBUG INFO
   kprintf("Bytes Written: %d \n", bytes_write);
+
+  oft[fd].fileptr = fp;
 
   return bytes_write;
 }
