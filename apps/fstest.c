@@ -115,6 +115,13 @@ uint fstest(int nargs, char *args[])
     rval2 = fs_read(rval, buf4, 300);
     buf4[300] = '\0';
     printf("\n\rContent of file [5th] %s", buf4);
+    
+    fs_write(rval, buf4, 300);
+    fs_seek(fd, -SIZE);
+    rval2 = fs_read(rval, buf4, 300);
+    buf4[300] = '\0';
+    printf("\n\rContent of file [6th] %s", buf4);
+
 
     // Test 2
     // Link dst file to file from above

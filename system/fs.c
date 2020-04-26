@@ -452,7 +452,7 @@ int fs_read_all(int fd, void *buf, bool clear)
 int fs_read(int fd, void *buf, int nbytes)
 {
   // Validity check
-  kprintf("reading: %d bytes, fp: %d, size: %d", nbytes, oft[fd].fileptr, oft[fd].in.size);
+
   if ((oft[fd].state == FSTATE_CLOSED) || (oft[fd].flag == O_WRONLY))
   {
     kprintf("Invlaid file to to read\n");
@@ -460,6 +460,7 @@ int fs_read(int fd, void *buf, int nbytes)
   }
   if ((oft[fd].fileptr + nbytes) > oft[fd].in.size)
   {
+    kprintf("reading: %d bytes, fp: %d, size: %d", nbytes, oft[fd].fileptr, oft[fd].in.size);
     kprintf("Read more than the file size\n");
     return SYSERR;
   }
