@@ -76,7 +76,7 @@ uint fstest(int nargs, char *args[]) {
     rval = fs_read(fd, buf2, SIZE/2);
     rval = fs_read(fd, buf4, SIZE/2);
     buf2[SIZE/2] = '\0';
-    buf4[SIZE/2] = '\0'
+    buf4[SIZE/2] = '\0';
 
     if(rval == 0)
     {
