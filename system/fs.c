@@ -510,7 +510,7 @@ int fs_link(char *src_filename, char *dst_filename)
   // setup the new entry
   inode_num = fsd.root_dir.entry[src_dir_index].inode_num;
   fsd.root_dir.entry[free_dir_index].inode_num = inode_num;
-  strncpy(fsd.root_dir.entry[free_dir_index].name, fsd.root_dir.entry[src_dir_index].name, FILENAMELEN);
+  strncpy(fsd.root_dir.entry[free_dir_index].name, dst_filename, FILENAMELEN);
 
   //inode nlink ++
   fs_get_inode_by_num(0, inode_num, &new_inode);
