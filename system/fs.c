@@ -457,8 +457,10 @@ int fs_read(int fd, void *buf, int nbytes)
     kprintf("Invlaid file to to read\n");
     return SYSERR;
   }
-  if((oft[fd].fileptr + nbytes) > oft[fd].in.size) {
-    kprintf("Read more than the file size");
+  if ((oft[fd].fileptr + nbytes) > oft[fd].in.size)
+  {
+    kprintf("reading: %d bytes, fp: %d, size: %d", nbytes, oft[fd].fileptr, oft[fd].in.size);
+    kprintf("Read more than the file size\n");
     return SYSERR;
   }
 
@@ -557,7 +559,7 @@ int fs_write(int fd, void *buf, int nbytes)
 
   memcpy(&write_buf[fp], buf, nbytes);
   fp += nbytes;
-  
+
   //DEBUG
   printf("fp: %d\n", fp);
   //fp = 1200
@@ -658,4 +660,29 @@ int fs_unlink(char *filename)
 
   return OK;
 }
+
+void fs_print_inode_info(int inode_num)
+{
+  struct inode i;
+  int j;
+  fs_get_inode_by_num(0, inode_num, &i);
+  kprintf("\n DEBUG INFO \n inode num: %d\n", inode_num);
+  kprintf("inode id: %d\n", i.id);
+  kprintf("inode nlink: %d\n", i.nlink);
+  kprintf("inode device: %d\n", i.device);
+  kprintf("inode size: %d\n", i.size);
+  kprintf("inode type: %d\n", i.type);
+  for (j = 0; j < INODEBLOCKS; j += 1)
+  {
+    if (i.blocks[j] != 0)
+    {
+      kprintf("%dth block index: %d\n", j, i.blocks[j]);
+    }
+  }
+}
+
+void fs_print_ftable_info(int fd){
+  ;
+}
+
 #endif /* FS */

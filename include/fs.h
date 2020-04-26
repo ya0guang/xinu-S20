@@ -76,6 +76,8 @@ int fs_read(int fd, void *buf, int nbytes); // read file contents
 int fs_write(int fd, void *buf, int nbytes); // write to file
 int fs_link(char *src_filename, char* dst_filename); // hardlink creation
 int fs_unlink(char *filename); // remove given hard link
+//DEBUG
+int fs_print_inode_info(int inode_num);
 
 /* filesystem functions */
 int fs_mkfs(int dev, int num_inodes);
