@@ -71,7 +71,7 @@ uint fstest(int nargs, char *args[])
     // fs_close(fdt1);
     // fdt2 = fs_open("rw_test", O_RDONLY);
     // fs_read(fdt2, read_string, size_test);
-    fs_read(fdt1, read_string, size_test + 100);
+    fs_read(fdt1, read_string, size_test);
     tmp = memcmp(write_string, read_string, size_test);
 
     printf("\nRW test\nread_string: %s\nwrite_string: %s\ndifference: %d\n", read_string, write_string, tmp);
