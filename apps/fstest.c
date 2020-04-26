@@ -5,7 +5,7 @@
 #include <fs.h>
 #define SIZE 1200
 
-uint fstest(int nargs, char *args[]) {
+uint fstest_my(int nargs, char *args[]) {
     int rval, rval2;
     int fd, i, j;
     char *buf1, *buf2, *buf3, *buf4;
@@ -140,7 +140,7 @@ clean_up:
     return OK;
 }
 
-uint fstest_original(int nargs, char *args[]) {
+uint fstest(int nargs, char *args[]) {
     int rval, rval2;
     int fd, i, j;
     char *buf1, *buf2, *buf3;
