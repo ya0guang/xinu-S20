@@ -464,7 +464,7 @@ int fs_read(int fd, void *buf, int nbytes)
 
   char read_buf[fsd.blocksz * INODEBLOCKS];
   int read_size = 0;
-  read_size = fs_read_all(fd, read_buf, false);
+  read_size = fs_read_all(fd, read_buf, FALSE);
 
   memcpy(buf, &read_buf[oft[fd].fileptr], nbytes);
   oft[fd].fileptr += nbytes;
@@ -551,7 +551,7 @@ int fs_write(int fd, void *buf, int nbytes)
   }
 
   //find the position of fileptr and refill the buffer
-  fs_read_all(fd, write_buf, true);
+  fs_read_all(fd, write_buf, TRUE);
 
   memcpy(&write_buf[fp], buf, nbytes);
   fp += nbytes;
