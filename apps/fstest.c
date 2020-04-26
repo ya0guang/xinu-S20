@@ -64,13 +64,15 @@ uint fstest(int nargs, char *args[])
 
     fdt1 = fs_create("rw_test", O_CREAT);
     fs_write(fdt1, write_string, size_test);
-    fs_close(fdt1);
-    fdt2 = fs_open("rw_test", O_RDONLY);
-    fs_read(fdt2, read_string, size_test);
+    fs_seek(fdt1, - size_test);
+    // fs_close(fdt1);
+    // fdt2 = fs_open("rw_test", O_RDONLY);
+    // fs_read(fdt2, read_string, size_test);
+    fs_read(fdt1, read_string, size_test);
     tmp = memcmp(write_string, read_string, size_test);
 
     printf("\nRW test\nread_string: %s\nwrite_string: %s\ndifference: %d\n", read_string, write_string, tmp);
-    fs_close(fdt2);
+    fs_close(fdt1);
 
     // Test 1
     // Create test file
