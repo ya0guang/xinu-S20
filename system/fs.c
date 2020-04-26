@@ -578,11 +578,11 @@ int fs_write(int fd, void *buf, int nbytes)
   // fp = oft[fd].fileptr - fp;
 
   //DEBUG INFO
-  kprintf("Bytes Written: %d \n", bytes_write);
+  kprintf("Bytes rewritten: %d \n", bytes_write);
 
   oft[fd].fileptr = fp;
 
-  return bytes_write;
+  return nbytes;
 }
 
 int fs_link(char *src_filename, char *dst_filename)
