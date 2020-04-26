@@ -5,12 +5,12 @@
 #include <fs.h>
 #define SIZE 1200
 
-uint fstest_my(int nargs, char *args[])
-{
+uint fstest(int nargs, char *args[]) {
     int rval, rval2;
     int fd, i, j;
     char *buf1, *buf2, *buf3, *buf4;
-
+    
+    
     /* Output help, if '--help' argument was supplied */
     if (nargs == 2 && strncmp(args[1], "--help", 7) == 0)
     {
@@ -41,29 +41,46 @@ uint fstest_my(int nargs, char *args[])
 #ifdef FS
 
     bs_mkdev(0, MDEV_BLOCK_SIZE, MDEV_NUM_BLOCKS); /* device "0" and default blocksize (=0) and count */
-    fs_mkfs(0, DEFAULT_NUM_INODES);                /* bsdev 0*/
+    fs_mkfs(0,DEFAULT_NUM_INODES); /* bsdev 0*/
     fs_testbitmask();
+    
+    buf1 = getmem(SIZE*sizeof(char));
+    buf2 = getmem(SIZE*sizeof(char));
+    buf3 = getmem(SIZE*sizeof(char));
+    buf4 = getmem(SIZE*sizeof(char));
 
-    buf1 = getmem(SIZE * sizeof(char));
-    buf2 = getmem(SIZE * sizeof(char));
-    buf3 = getmem(SIZE * sizeof(char));
-    buf4 = getmem(SIZE * sizeof(char));
+    // Read & write test
+    int fdt1;
+    int fdt2; 
+    int tmp;
+    char write_string[10] = "teststr";
+    char read_string[10];
 
-    // Test 1
+    fdt1 = fs_create("rw_test", O_CREAT);
+    fs_write(fdt1, write_string, strlen(write_string));
+    fs_close(fdt1);
+    fdt2 = fs_open("rw_test", O_RDONLY);
+    fs_read(fdt2, read_string, strlen(write_string));
+    tmp = memcmp(write_string, read_string, strlen(write_string));
+
+    printf("\nRW test\nread_string: %s\nwrite_string: %s\ndifference: %d\n", read_string, write_string, tmp);
+    fs_close(fdt2);
+
+    
+// Test 1
     // Create test file
     fd = fs_create("Test_File", O_CREAT);
-
+       
     // Fill buffer with random stuff
-    for (i = 0; i < SIZE; i++)
+    for(i=0; i<SIZE; i++)
     {
-        j = i % (127 - 33);
-        j = j + 33;
-        buf1[i] = (char)j;
+        j = i%(127-33);
+        j = j+33;
+        buf1[i] = (char) j;
     }
-
-    rval = fs_write(fd, buf1, SIZE / 2);
-    rval = fs_write(fd, &buf1[SIZE / 2], SIZE / 2);
-    if (rval == 0 || rval != SIZE / 2)
+    
+    rval = fs_write(fd,buf1,SIZE);
+    if(rval == 0 || rval != SIZE )
     {
         printf("\n\r File write failed");
         goto clean_up;
@@ -71,97 +88,66 @@ uint fstest_my(int nargs, char *args[])
 
     // Now my file offset is pointing at EOF file, i need to bring it back to start of file
     // Assuming here implementation of fs_seek is like "original_offset = original_offset + input_offset_from_fs_seek"
-    fs_seek(fd, -SIZE);
+    fs_seek(fd,-rval); 
+    
+    //read the file 
+    rval = fs_read(fd, buf2, rval);
+    buf2[rval] = '\0';
 
-    //read the file
-    rval = fs_read(fd, buf2, SIZE / 2);
-    rval = fs_read(fd, buf4, SIZE / 2);
-    buf2[SIZE / 2] = '\0';
-    buf4[SIZE / 2] = '\0';
-
-    if (rval == 0)
+    if(rval == 0)
     {
         printf("\n\r File read failed");
         goto clean_up;
     }
-
-    printf("\n\rContent of file [part1] %s", buf2);
-    printf("\n\rContent of file [part2] %s", buf4);
-
+        
+    printf("\n\rContent of file %s",buf2);
+    
     rval2 = fs_close(fd);
-    if (rval2 != OK)
+    if(rval2 != OK)
     {
-        printf("\n\rReturn val for fclose : %d", rval);
+        printf("\n\rReturn val for fclose : %d",rval);
     }
 
-    // My test of read & open
-    freemem(buf4, SIZE);
-    buf4 = getmem(SIZE * sizeof(char));
-    rval = fs_open("Test_File", O_RDWR);
-    printf("fd: %d \n", rval);
-    rval2 = fs_read(rval, buf4, 300);
-    printf("rval: %d\n", rval);
-    buf4[300] = '\0';
-    printf("\n\rContent of file [1st] %s", buf4);
-    rval2 = fs_read(rval, buf4, 300);
-    buf4[300] = '\0';
-    printf("\n\rContent of file [2nd] %s", buf4);
-    rval2 = fs_read(rval, buf4, 300);
-    buf4[300] = '\0';
-    printf("\n\rContent of file [3rd] %s", buf4);
-    rval2 = fs_read(rval, buf4, 300);
-    buf4[300] = '\0';
-    printf("\n\rContent of file [4th] %s", buf4);
-    rval2 = fs_read(rval, buf4, 300);
-    buf4[300] = '\0';
-    printf("\n\rContent of file [5th] %s", buf4);
+// Test 2
+   // Link dst file to file from above
+   rval2 = fs_link("Test_File", "Dst_Test_File");
+   if(rval2 != OK)
+   {
+       printf("\n\r File link failed");
+       goto clean_up;
+   }
+   int fd1 = fs_open("Dst_Test_File", 0);
+   //read the file 
+   rval = fs_read(fd1, buf3, rval);
+   buf3[rval] = '\0';
 
-    fs_write(rval, buf4, 300);
-    fs_seek(fd, -300);
-    rval2 = fs_read(rval, buf4, 300);
-    buf4[300] = '\0';
-    printf("\n\rContent of file [6th] %s", buf4);
+   if(rval == 0)
+   {
+       printf("\n\r File read failed");
+       goto clean_up;
+   }
+       
+   printf("\n\rContent of file %s",buf3);
 
-    // Test 2
-    // Link dst file to file from above
-    rval2 = fs_link("Test_File", "Dst_Test_File");
-    if (rval2 != OK)
-    {
-        printf("\n\r File link failed");
-        goto clean_up;
-    }
-    int fd1 = fs_open("Dst_Test_File", 0);
-    //read the file
-    rval = fs_read(fd1, buf3, SIZE);
-    buf3[rval] = '\0';
+   rval2 = fs_close(fd1);
+   if(rval2 != OK)
+   {
+       printf("\n\rReturn val for fclose : %d",rval);
+   }
 
-    if (rval == 0)
-    {
-        printf("\n\r File read failed");
-        goto clean_up;
-    }
-
-    printf("\n\rContent of file %s", buf3);
-
-    rval2 = fs_close(fd1);
-    if (rval2 != OK)
-    {
-        printf("\n\rReturn val for fclose : %d", rval);
-    }
-
-    // Test 3
-    rval2 = fs_unlink("Dst_Test_File");
-    if (rval2 != OK)
-    {
-        printf("\n\r File unlink failed");
-        goto clean_up;
-    }
+// Test 3
+   rval2 = fs_unlink("Dst_Test_File");
+   if(rval2 != OK)
+   {
+       printf("\n\r File unlink failed");
+       goto clean_up;
+   }
 
 clean_up:
-    freemem(buf1, SIZE);
-    freemem(buf2, SIZE);
-    freemem(buf3, SIZE);
-    freemem(buf4, SIZE);
+    freemem(buf1,SIZE);
+    freemem(buf2,SIZE);
+    freemem(buf3,SIZE);
+    freemem(buf4,SIZE);
 
 #else
     printf("No filesystem support\n");
@@ -170,7 +156,7 @@ clean_up:
     return OK;
 }
 
-uint fstest(int nargs, char *args[])
+uint fstest_origin(int nargs, char *args[])
 {
     int rval, rval2;
     int fd, i, j;
@@ -264,52 +250,52 @@ uint fstest(int nargs, char *args[])
     }
 
     // ADDED SNIPPET
-    rval2 = fs_link("Test_File", "New_File");
-    if (rval2 != OK)
-    {
-        printf("\n\r File link failed");
-        goto clean_up;
-    }
-    int tfd = fs_open("New_File", 2);
-    char tbuf[5];
-    char nbuf[5];
-    tbuf[0] = 'h';
-    tbuf[1] = 'e';
-    tbuf[2] = 'l';
-    tbuf[3] = '\0';
-    rval2 = fs_write(tfd, tbuf, strlen(tbuf));
+    // rval2 = fs_link("Test_File", "New_File");
+    // if (rval2 != OK)
+    // {
+    //     printf("\n\r File link failed");
+    //     goto clean_up;
+    // }
+    // int tfd = fs_open("New_File", 2);
+    // char tbuf[5];
+    // char nbuf[5];
+    // tbuf[0] = 'h';
+    // tbuf[1] = 'e';
+    // tbuf[2] = 'l';
+    // tbuf[3] = '\0';
+    // rval2 = fs_write(tfd, tbuf, strlen(tbuf));
 
-    if (rval2 == 0)
-    {
-        printf("\n\r File write failed");
-        goto clean_up;
-    }
+    // if (rval2 == 0)
+    // {
+    //     printf("\n\r File write failed");
+    //     goto clean_up;
+    // }
 
-    fs_seek(tfd, -rval2);
+    // fs_seek(tfd, -rval2);
 
-    rval2 = fs_read(tfd, buf3, strlen(tbuf));
-    buf3[rval2] = '\0';
+    // rval2 = fs_read(tfd, buf3, strlen(tbuf));
+    // buf3[rval2] = '\0';
 
-    if (rval2 == 0)
-    {
-        printf("\n\r File read failed");
-        goto clean_up;
-    }
+    // if (rval2 == 0)
+    // {
+    //     printf("\n\r File read failed");
+    //     goto clean_up;
+    // }
 
-    printf("\n\rContent of file [New_File] %s", buf3);
+    // printf("\n\rContent of file [New_File] %s", buf3);
 
-    rval2 = fs_close(tfd);
-    if (rval2 != OK)
-    {
-        printf("\n\rReturn val for fclose : %d", rval);
-    }
+    // rval2 = fs_close(tfd);
+    // if (rval2 != OK)
+    // {
+    //     printf("\n\rReturn val for fclose : %d", rval);
+    // }
 
-    tfd = fs_open("Test_File", 2);
-    rval2 = fs_read(tfd, nbuf, strlen(tbuf));
-    printf("\n\rContent of file [Test_File] %s", nbuf);
+    // tfd = fs_open("Test_File", 2);
+    // rval2 = fs_read(tfd, nbuf, strlen(tbuf));
+    // printf("\n\rContent of file [Test_File] %s", nbuf);
     
-    tfd = fs_open("New_File", 2);
-    
+    // tfd = fs_open("New_File", 2);
+
     //SNIPPET END
     int fd1 = fs_open("Dst_Test_File", 0);
     //read the file
