@@ -53,7 +53,7 @@ uint fstest(int nargs, char *args[])
     int fdt1;
     int fdt2;
     int tmp;
-    int size_test = 512;
+    int size_test = 513;
 
     char write_string[1000] = {'\0'};
     char read_string[1000] = {'\0'};
