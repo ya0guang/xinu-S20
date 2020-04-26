@@ -247,7 +247,7 @@ int fs_get_entry_index(char *filename)
   {
     //DEBUG
     // kprintf("strncmp of %s, %s: %d\n", fsd.root_dir.entry[i].name, filename, strncmp(fsd.root_dir.entry[i].name, filename, FILENAMELEN));
-    if (strncmp(fsd.root_dir.entry[i].name, filename, FILENAMELEN) == 0)
+    if ((strncmp(fsd.root_dir.entry[i].name, filename, FILENAMELEN) == 0) && (fsd.root_dir.entry[i].inode_num != 0))
     {
       dir_index = i;
       break;
@@ -484,8 +484,7 @@ int fs_read(int fd, void *buf, int nbytes)
   return nbytes;
 }
 
-// return number of bytes written
-int fs_write(int fd, void *buf, int nbytes)
+int fs_write_all(int fd, void *buf, int nbytes)
 {
   int remain = nbytes;
   int free_blk_num = fsd.nblocks + 1;
@@ -493,9 +492,7 @@ int fs_write(int fd, void *buf, int nbytes)
   void *bufptr = buf;
   int i = INODEBLOCKS + 2;
   int inode_blk_index = 0;
-  int fp = oft[fd].fileptr;
 
-  //TODO: find the position of fileptr and start write
 
   if ((oft[fd].flag == O_RDONLY) || (oft[fd].in.type == INODE_TYPE_DIR))
   {
@@ -538,7 +535,40 @@ int fs_write(int fd, void *buf, int nbytes)
     oft[fd].in.blocks[inode_blk_index++] = free_blk_num;
     oft[fd].in.size += bytes_write;
     fs_setmaskbit(free_blk_num);
+
+    return oft[fd].in.size;
   }
+
+  //write inode to disk
+  fs_put_inode_by_num(0, oft[fd].de->inode_num, &oft[fd].in);
+  fp = oft[fd].fileptr - fp;
+
+  //DEBUG INFO
+  // kprintf("Bytes Written: %d \n", fp);
+
+  return fp;
+}
+
+// return number of bytes written
+int fs_write(int fd, void *buf, int nbytes)
+{
+  int remain = nbytes;
+  int free_blk_num = fsd.nblocks + 1;
+  int bytes_write;
+  void *bufptr = buf;
+  int i = INODEBLOCKS + 2;
+  int inode_blk_index = 0;
+  int fp = oft[fd].fileptr;
+
+  //TODO: find the position of fileptr and start write
+
+  if ((oft[fd].flag == O_RDONLY) || (oft[fd].in.type == INODE_TYPE_DIR))
+  {
+    kprintf("Writing a Read Only file / dir is NOT allowed! \n");
+    return SYSERR;
+  }
+
+  fs_write_all(fd, buf, nbytes);
 
   //write inode to disk
   fs_put_inode_by_num(0, oft[fd].de->inode_num, &oft[fd].in);
