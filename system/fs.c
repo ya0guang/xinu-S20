@@ -480,7 +480,9 @@ int fs_write_all(int fd, void *buf, int nbytes)
   void *bufptr = buf;
   int i = INODEBLOCKS + 2;
   int inode_blk_index = 0;
-  int fp = oft[fd].fileptr;
+  oft[fd].in.size = 0;
+  oft[fd].fileptr = 0;
+  // int fp = oft[fd].fileptr;
 
   if ((oft[fd].flag == O_RDONLY) || (oft[fd].in.type == INODE_TYPE_DIR))
   {
@@ -528,7 +530,7 @@ int fs_write_all(int fd, void *buf, int nbytes)
 
   //write inode to disk
   fs_put_inode_by_num(0, oft[fd].de->inode_num, &oft[fd].in);
-  fp = oft[fd].fileptr - fp;
+  // fp = oft[fd].fileptr - fp;
 
   //DEBUG INFO
   // kprintf("Bytes Written: %d \n", fp);
@@ -555,6 +557,10 @@ int fs_write(int fd, void *buf, int nbytes)
 
   memcpy(&write_buf[fp], buf, nbytes);
   fp += nbytes;
+  
+  //DEBUG
+  printf("fp: %d", fp);
+  //fp = 1200
 
   bytes_write = fs_write_all(fd, write_buf, fp);
 
