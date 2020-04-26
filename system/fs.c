@@ -461,7 +461,7 @@ int fs_read(int fd, void *buf, int nbytes)
   if ((oft[fd].fileptr + nbytes) > oft[fd].in.size)
   {
     // kprintf("\nreading: %d bytes, fp: %d, size: %d", nbytes, oft[fd].fileptr, oft[fd].in.size);
-    kprintf("Read more than the file size\n");
+    kprintf("\nRead more than the file size\n");
     return SYSERR;
   }
 
