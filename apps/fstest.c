@@ -58,13 +58,16 @@ uint fstest(int nargs, char *args[])
     char write_string[1000] = {'\0'};
     char read_string[1000] = {'\0'};
 
-    for(tmp = 0; tmp < size_test; tmp += 1) {
-        write_string[tmp] = 'A';
+    for (tmp = 0; tmp < size_test; tmp += 1)
+    {
+        j = i % (127 - 33);
+        j = j + 33;
+        write_string[i] = (char)j;
     }
 
     fdt1 = fs_create("rw_test", O_CREAT);
     fs_write(fdt1, write_string, size_test);
-    fs_seek(fdt1, - size_test);
+    fs_seek(fdt1, -size_test);
     // fs_close(fdt1);
     // fdt2 = fs_open("rw_test", O_RDONLY);
     // fs_read(fdt2, read_string, size_test);
