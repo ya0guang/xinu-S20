@@ -303,7 +303,7 @@ int fs_open(char *filename, int flags)
 
   //set the open file table
   fd = fs_get_free_fd();
-  if (df == SYSERR)
+  if (fd == SYSERR)
   {
     return SYSERR;
   }
