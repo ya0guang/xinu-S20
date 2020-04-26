@@ -104,7 +104,7 @@ uint fstest(int nargs, char *args[])
     }
     int fd1 = fs_open("Dst_Test_File", 0);
     //read the file
-    rval = fs_read(fd1, buf3, rval);
+    rval = fs_read(fd1, buf3, SIZE);
     buf3[rval] = '\0';
 
     if (rval == 0)
