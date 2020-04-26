@@ -338,7 +338,7 @@ int fs_read(int fd, void *buf, int nbytes)
   {
     if ((oft[fd].in.size - read_size) > 512)
     {
-      to_read = 512
+      to_read = 512;
     }
     else
     {
@@ -352,7 +352,7 @@ int fs_read(int fd, void *buf, int nbytes)
   }
 
   memcpy(buf, &read_buf[oft[fd].fileptr], nbytes);
-  read_buf[oft[fd].fileptr += nbytes;
+  oft[fd].fileptr+= nbytes;
   
   return nbytes;
 }
