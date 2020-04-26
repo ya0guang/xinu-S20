@@ -8,7 +8,7 @@
 uint fstest(int nargs, char *args[]) {
     int rval, rval2;
     int fd, i, j;
-    char *buf1, *buf2, *buf3;
+    char *buf1, *buf2, *buf3, *buf4;
     
     
     /* Output help, if '--help' argument was supplied */
@@ -47,6 +47,7 @@ uint fstest(int nargs, char *args[]) {
     buf1 = getmem(SIZE*sizeof(char));
     buf2 = getmem(SIZE*sizeof(char));
     buf3 = getmem(SIZE*sizeof(char));
+    buf4 = getmem(SIZE*sizeof(char));
     
 // Test 1
     // Create test file
@@ -72,8 +73,10 @@ uint fstest(int nargs, char *args[]) {
     fs_seek(fd,-rval); 
     
     //read the file 
-    rval = fs_read(fd, buf2, rval);
-    buf2[rval] = '\0';
+    rval = fs_read(fd, buf2, SIZE/2);
+    rval = fs_read(fd, buf4, SIZE/2);
+    buf2[SIZE/2] = '\0';
+    buf4[SIZE/2] = '\0'
 
     if(rval == 0)
     {
@@ -81,7 +84,8 @@ uint fstest(int nargs, char *args[]) {
         goto clean_up;
     }
         
-    printf("\n\rContent of file %s",buf2);
+    printf("\n\rContent of file [part1] %s",buf2);
+    printf("\n\rContent of file [part2] %s",buf4);
     
     rval2 = fs_close(fd);
     if(rval2 != OK)
