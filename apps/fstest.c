@@ -5,7 +5,7 @@
 #include <fs.h>
 #define SIZE 1200
 
-uint fstest(int nargs, char *args[])
+uint fstest_my(int nargs, char *args[])
 {
     int rval, rval2;
     int fd, i, j;
@@ -117,7 +117,7 @@ uint fstest(int nargs, char *args[])
     printf("\n\rContent of file [5th] %s", buf4);
 
     fs_write(rval, buf4, 300);
-    fs_seek(fd, -SIZE);
+    fs_seek(fd, -300);
     rval2 = fs_read(rval, buf4, 300);
     buf4[300] = '\0';
     printf("\n\rContent of file [6th] %s", buf4);
@@ -171,7 +171,7 @@ clean_up:
     return OK;
 }
 
-uint fstest_origin(int nargs, char *args[])
+uint fstest(int nargs, char *args[])
 {
     int rval, rval2;
     int fd, i, j;
