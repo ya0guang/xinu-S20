@@ -490,6 +490,10 @@ int fs_write_all(int fd, void *buf, int nbytes)
   oft[fd].fileptr = 0;
   // int fp = oft[fd].fileptr;
 
+  //DEBUG
+  kprintf("DEBUG: Str to write: %s", buf);
+
+  // validity check
   if ((oft[fd].flag == O_RDONLY) || (oft[fd].in.type == INODE_TYPE_DIR))
   {
     kprintf("Writing a Read Only file / dir is NOT allowed! \n");
@@ -528,8 +532,9 @@ int fs_write_all(int fd, void *buf, int nbytes)
     }
 
     bs_bwrite(0, free_blk_num, 0, bufptr, bytes_write);
+    bufptr += bytes_write;
     //DEBUG
-    kprintf("\nWriting Block: %d\n", free_blk_num);
+    kprintf("\nWriting Block: %d\n Writing %d bytes\n", free_blk_num, bytes_write);
     oft[fd].fileptr += bytes_write;
     oft[fd].in.blocks[inode_blk_index++] = free_blk_num;
     oft[fd].in.size += bytes_write;
@@ -554,6 +559,7 @@ int fs_write(int fd, void *buf, int nbytes)
   char write_buf[fsd.blocksz * INODEBLOCKS];
 
   int fp = oft[fd].fileptr;
+
 
   if ((oft[fd].flag == O_RDONLY) || (oft[fd].in.type == INODE_TYPE_DIR))
   {
