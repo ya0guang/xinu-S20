@@ -245,6 +245,8 @@ int fs_get_entry_index(char *filename)
 
   for (i = 0; i < DIRECTORY_SIZE; i += 1)
   {
+    //DEBUG
+    kprintf("strncmp of %s, %s: %d\n", fsd.root_dir.entry[i].name, filename, fsd.root_dir.entry[i].name, filename, FILENAMELEN));
     if (strncmp(fsd.root_dir.entry[i].name, filename, FILENAMELEN) == 0)
     {
       dir_index = i;
