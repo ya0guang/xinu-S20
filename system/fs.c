@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
 #ifdef FS
 #include <fs.h>
 
@@ -25,17 +24,18 @@ char block_cache[512];
 struct filetable oft[NUM_FD]; // open file table
 int next_open_fd = 0;
 
-
 #define INODES_PER_BLOCK (fsd.blocksz / sizeof(struct inode))
-#define NUM_INODE_BLOCKS (( (fsd.ninodes % INODES_PER_BLOCK) == 0) ? fsd.ninodes / INODES_PER_BLOCK : (fsd.ninodes / INODES_PER_BLOCK) + 1)
+#define NUM_INODE_BLOCKS (((fsd.ninodes % INODES_PER_BLOCK) == 0) ? fsd.ninodes / INODES_PER_BLOCK : (fsd.ninodes / INODES_PER_BLOCK) + 1)
 #define FIRST_INODE_BLOCK 2
 
 int fs_fileblock_to_diskblock(int dev, int fd, int fileblock);
 
-int fs_fileblock_to_diskblock(int dev, int fd, int fileblock) {
+int fs_fileblock_to_diskblock(int dev, int fd, int fileblock)
+{
   int diskblock;
 
-  if (fileblock >= INODEBLOCKS - 2) {
+  if (fileblock >= INODEBLOCKS - 2)
+  {
     printf("No indirect block support\n");
     return SYSERR;
   }
@@ -46,15 +46,18 @@ int fs_fileblock_to_diskblock(int dev, int fd, int fileblock) {
 }
 
 /* read in an inode and fill in the pointer */
-int fs_get_inode_by_num(int dev, int inode_number, struct inode *in) {
+int fs_get_inode_by_num(int dev, int inode_number, struct inode *in)
+{
   int bl, inn;
   int inode_off;
 
-  if (dev != 0) {
+  if (dev != 0)
+  {
     printf("Unsupported device\n");
     return SYSERR;
   }
-  if (inode_number > fsd.ninodes) {
+  if (inode_number > fsd.ninodes)
+  {
     printf("fs_get_inode_by_num: inode %d out of range\n", inode_number);
     return SYSERR;
   }
@@ -74,18 +77,20 @@ int fs_get_inode_by_num(int dev, int inode_number, struct inode *in) {
   memcpy(in, &block_cache[inode_off], sizeof(struct inode));
 
   return OK;
-
 }
 
 /* write inode indicated by pointer to device */
-int fs_put_inode_by_num(int dev, int inode_number, struct inode *in) {
+int fs_put_inode_by_num(int dev, int inode_number, struct inode *in)
+{
   int bl, inn;
 
-  if (dev != 0) {
+  if (dev != 0)
+  {
     printf("Unsupported device\n");
     return SYSERR;
   }
-  if (inode_number > fsd.ninodes) {
+  if (inode_number > fsd.ninodes)
+  {
     printf("fs_put_inode_by_num: inode %d out of range\n", inode_number);
     return SYSERR;
   }
@@ -99,53 +104,63 @@ int fs_put_inode_by_num(int dev, int inode_number, struct inode *in) {
   */
 
   bs_bread(dev0, bl, 0, block_cache, fsd.blocksz);
-  memcpy(&block_cache[(inn*sizeof(struct inode))], in, sizeof(struct inode));
+  memcpy(&block_cache[(inn * sizeof(struct inode))], in, sizeof(struct inode));
   bs_bwrite(dev0, bl, 0, block_cache, fsd.blocksz);
 
   return OK;
 }
-     
+
 /* create file system on device; write file system block and block bitmask to
  * device */
-int fs_mkfs(int dev, int num_inodes) {
+int fs_mkfs(int dev, int num_inodes)
+{
   int i;
-  
-  if (dev == 0) {
+
+  if (dev == 0)
+  {
     fsd.nblocks = dev0_numblocks;
     fsd.blocksz = dev0_blocksize;
   }
-  else {
+  else
+  {
     printf("Unsupported device\n");
     return SYSERR;
   }
 
-  if (num_inodes < 1) {
+  if (num_inodes < 1)
+  {
     fsd.ninodes = DEFAULT_NUM_INODES;
   }
-  else {
+  else
+  {
     fsd.ninodes = num_inodes;
   }
 
   i = fsd.nblocks;
-  while ( (i % 8) != 0) {i++;}
-  fsd.freemaskbytes = i / 8; 
-  
-  if ((fsd.freemask = getmem(fsd.freemaskbytes)) == (void *)SYSERR) {
+  while ((i % 8) != 0)
+  {
+    i++;
+  }
+  fsd.freemaskbytes = i / 8;
+
+  if ((fsd.freemask = getmem(fsd.freemaskbytes)) == (void *)SYSERR)
+  {
     printf("fs_mkfs memget failed.\n");
     return SYSERR;
   }
-  
+
   /* zero the free mask */
-  for(i=0;i<fsd.freemaskbytes;i++) {
+  for (i = 0; i < fsd.freemaskbytes; i++)
+  {
     fsd.freemask[i] = '\0';
   }
-  
+
   fsd.inodes_used = 0;
-  
+
   /* write the fsystem block to SB_BLK, mark block used */
   fs_setmaskbit(SB_BLK);
   bs_bwrite(dev0, SB_BLK, 0, &fsd, sizeof(struct fsystem));
-  
+
   /* write the free block bitmask in BM_BLK, mark block used */
   fs_setmaskbit(BM_BLK);
   bs_bwrite(dev0, BM_BLK, 0, fsd.freemask, fsd.freemaskbytes);
@@ -154,7 +169,8 @@ int fs_mkfs(int dev, int num_inodes) {
 }
 
 /* print information related to inodes*/
-void fs_print_fsd(void) {
+void fs_print_fsd(void)
+{
 
   printf("fsd.ninodes: %d\n", fsd.ninodes);
   printf("sizeof(struct inode): %d\n", sizeof(struct inode));
@@ -163,7 +179,8 @@ void fs_print_fsd(void) {
 }
 
 /* specify the block number to be set in the mask */
-int fs_setmaskbit(int b) {
+int fs_setmaskbit(int b)
+{
   int mbyte, mbit;
   mbyte = b / 8;
   mbit = b % 8;
@@ -173,18 +190,19 @@ int fs_setmaskbit(int b) {
 }
 
 /* specify the block number to be read in the mask */
-int fs_getmaskbit(int b) {
+int fs_getmaskbit(int b)
+{
   int mbyte, mbit;
   mbyte = b / 8;
   mbit = b % 8;
 
-  return( ( (fsd.freemask[mbyte] << mbit) & 0x80 ) >> 7);
+  return (((fsd.freemask[mbyte] << mbit) & 0x80) >> 7);
   return OK;
-
 }
 
 /* specify the block number to be unset in the mask */
-int fs_clearmaskbit(int b) {
+int fs_clearmaskbit(int b)
+{
   int mbyte, mbit, invb;
   mbyte = b / 8;
   mbit = b % 8;
@@ -201,50 +219,79 @@ int fs_clearmaskbit(int b) {
    positions to make the match in bit7 (the 8th bit) and then shift
    that value 7 times to the low-order bit to print.  Yes, it could be
    the other way...  */
-void fs_printfreemask(void) { // print block bitmask
-  int i,j;
+void fs_printfreemask(void)
+{ // print block bitmask
+  int i, j;
 
-  for (i=0; i < fsd.freemaskbytes; i++) {
-    for (j=0; j < 8; j++) {
+  for (i = 0; i < fsd.freemaskbytes; i++)
+  {
+    for (j = 0; j < 8; j++)
+    {
       printf("%d", ((fsd.freemask[i] << j) & 0x80) >> 7);
     }
-    if ( (i % 8) == 7) {
+    if ((i % 8) == 7)
+    {
       printf("\n");
     }
   }
   printf("\n");
 }
 
-
-int fs_open(char *filename, int flags) {
+//return fd
+int fs_open(char *filename, int flags)
+{
   return SYSERR;
 }
 
-int fs_close(int fd) {
+int fs_close(int fd)
+{
   return SYSERR;
 }
 
-int fs_create(char *filename, int mode) {
+int fs_create(char *filename, int mode)
+{
+  int i, j;
+  struct inode inode_get, inode_new;
+
+  // find a free inode for file to be stored
+  if (fsd.ninodes <= fsd.inodes_used)
+  {
+    return SYSERR;
+  }
+  for (i = 0; i < 10; i += 1)
+  {
+    fs_get_inode_by_num(0, i, &inode_get);
+    printf("id: %d, type: %d, nlink: %d, device: %d, size: %d, blocks: ", inode_get.id, inode_get.type, inode_get.nlink, inode_get.device, inode_get.size);
+    for (j = 0; j < INODEBLOCKS; j += 1)
+    {
+      printf(" %d ", inode_get.blocks[j]);
+    }
+  }
+}
+
+int fs_seek(int fd, int offset)
+{
   return SYSERR;
 }
 
-int fs_seek(int fd, int offset) {
+int fs_read(int fd, void *buf, int nbytes)
+{
   return SYSERR;
 }
 
-int fs_read(int fd, void *buf, int nbytes) {
+// return number of bytes written
+int fs_write(int fd, void *buf, int nbytes)
+{
   return SYSERR;
 }
 
-int fs_write(int fd, void *buf, int nbytes) {
+int fs_link(char *src_filename, char *dst_filename)
+{
   return SYSERR;
 }
 
-int fs_link(char *src_filename, char* dst_filename) {
-  return SYSERR;
-}
-
-int fs_unlink(char *filename) {
+int fs_unlink(char *filename)
+{
   return SYSERR;
 }
 #endif /* FS */
