@@ -537,7 +537,6 @@ int fs_write_all(int fd, void *buf, int nbytes)
     oft[fd].in.size += bytes_write;
     fs_setmaskbit(free_blk_num);
 
-    return oft[fd].in.size;
   }
 
   //write inode to disk
@@ -547,7 +546,7 @@ int fs_write_all(int fd, void *buf, int nbytes)
   //DEBUG INFO
   // kprintf("Bytes Written: %d \n", fp);
 
-  return fp;
+  return oft[fd].in.size;
 }
 
 // return number of bytes written
