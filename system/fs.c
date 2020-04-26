@@ -10,6 +10,7 @@
 static struct fsystem fsd;
 int dev0_numblocks;
 int dev0_blocksize;
+int inode_id_init = 10086;
 char *dev0_blocks;
 
 extern int dev0;
@@ -250,23 +251,68 @@ int fs_close(int fd)
 
 int fs_create(char *filename, int mode)
 {
-  int i, j;
+  int i, fd;
+  int free_inode_number = fsd.ninodes + 1;
+  int free_dir_index = DIRECTORY_SIZE + 1;
   struct inode inode_get, inode_new;
 
-  // find a free inode for file to be stored
-  if (fsd.ninodes <= fsd.inodes_used)
-  {
-    return SYSERR;
-  }
-  for (i = 0; i < 10; i += 1)
+  // find there exist a free inode for new file
+  // if (fsd.ninodes <= fsd.inodes_used + 1)
+  // {
+  //   return SYSERR;
+  // }
+  // inode 0 will never be used!
+  for (i = 1; i < fsd.ninodes; i += 1)
   {
     fs_get_inode_by_num(0, i, &inode_get);
-    printf("id: %d, type: %d, nlink: %d, device: %d, size: %d, blocks: ", inode_get.id, inode_get.type, inode_get.nlink, inode_get.device, inode_get.size);
-    for (j = 0; j < INODEBLOCKS; j += 1)
+    // printf("id: %d, type: %d, nlink: %d, device: %d, size: %d, blocks: ", inode_get.id, inode_get.type, inode_get.nlink, inode_get.device, inode_get.size);
+    // for (j = 0; j < INODEBLOCKS; j += 1)
+    // {
+    //   printf(" %d ", inode_get.blocks[j]);
+    // }
+    if (inode_get.nlink == 0)
     {
-      printf(" %d ", inode_get.blocks[j]);
+      free_inode_number = i;
+      break;
     }
   }
+  //find a free directory entry
+  for (i = 0; i < DIRECTORY_SIZE; i += 1)
+  {
+    if (fsd.root_dir.entry[i].inode_num == 0)
+    {
+      free_dir_index = i;
+      break;
+    }
+  }
+
+  if ((free_dir_index > DIRECTORY_SIZE) || (free_inode_number > fsd.ninodes))
+  {
+    kprintf("No free dir entry or inode,\n");
+    return SYSERR;
+  }
+
+  // set dir entry
+  fsd.root_dir.entry[free_dir_index].inode_num = free_inode_number;
+  strncpy(fsd.root_dir.entry[free_dir_index].name, filename, FILENAMELEN);
+
+  inode_new.id = inode_id_init++;
+  inode_new.nlink = 1;
+  inode_new.device = 0;
+  inode_new.size = 0;
+  inode_new.type = INODE_TYPE_FILE;
+
+  // open it in oft
+  fd = next_open_fd++;
+  oft[fd].state = FSTATE_OPEN;
+  oft[fd].fileptr = 0;
+  oft[fd].de = &fsd.root_dir.entry[free_dir_index];
+  oft[fd].in = inode_new;
+
+  printf("oft[%d]: in.id: %d, filename: %s, diren\t num: %d",
+         fd, oft[fd].in.id, oft[fd].de->name, oft[fd].de->inode_num);
+
+  return fd;
 }
 
 int fs_seek(int fd, int offset)
