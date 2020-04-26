@@ -427,9 +427,9 @@ int fs_read_all(int fd, void *buf, bool clear)
 
   while (read_size != oft[fd].in.size)
   {
-    if ((oft[fd].in.size - read_size) > 512)
+    if ((oft[fd].in.size - read_size) > fsd.blocksz)
     {
-      to_read = 512;
+      to_read = fsd.blocksz;
     }
     else
     {
@@ -513,10 +513,10 @@ int fs_write_all(int fd, void *buf, int nbytes)
     }
 
     //determain the length about to write
-    if (remain >= 512)
+    if (remain >= fsd.blocksz)
     {
-      bytes_write = 512;
-      remain = remain - 512;
+      bytes_write = fsd.blocksz;
+      remain = remain - fsd.blocksz;
     }
     else
     {
