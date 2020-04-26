@@ -320,14 +320,41 @@ int fs_create(char *filename, int mode)
 
 int fs_seek(int fd, int offset)
 {
-  //TODO: Valid fd check
+  //TODO: Validity check
   oft[fd].fileptr += offset;
   return OK;
 }
 
 int fs_read(int fd, void *buf, int nbytes)
 {
-  return SYSERR;
+  //TODO: Validity check
+  char read_buf[fsd.blocksz * INODEBLOCKS];
+  int read_size = 0;
+  int to_read = 0;
+  int read_blks = 0;
+  int blk_index = 0;
+
+  while (read_size != oft[fd].in.size)
+  {
+    if ((oft[fd].in.size - read_size) > 512)
+    {
+      to_read = 512
+    }
+    else
+    {
+      to_read = oft[fd].in.size - read_size;
+    }
+
+    // read from block
+    blk_index = oft[fd].in.blocks[read_blks++];
+    bs_bread(0, blk_index, 0, &read_buf[read_size], to_read);
+    read_size += to_read;
+  }
+
+  memcpy(buf, &read_buf[oft[fd].fileptr], nbytes);
+  read_buf[oft[fd].fileptr += nbytes;
+  
+  return nbytes;
 }
 
 // return number of bytes written
@@ -340,10 +367,11 @@ int fs_write(int fd, void *buf, int nbytes)
   int i = INODEBLOCKS + 2;
   int inode_blk_index = 0;
   int fp = oft[fd].fileptr;
-  
+
   //TODO: find the position of fileptr and start write
 
-  if((oft[fd].flag == O_RDONLY) || (oft[fd].in.type == INODE_TYPE_DIR)) {
+  if ((oft[fd].flag == O_RDONLY) || (oft[fd].in.type == INODE_TYPE_DIR))
+  {
     kprintf("Writing a Read Only file / dir is NOT allowed! \n");
     return SYSERR;
   }
