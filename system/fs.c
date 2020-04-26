@@ -460,7 +460,7 @@ int fs_read(int fd, void *buf, int nbytes)
   }
   if ((oft[fd].fileptr + nbytes) > oft[fd].in.size)
   {
-    kprintf("reading: %d bytes, fp: %d, size: %d", nbytes, oft[fd].fileptr, oft[fd].in.size);
+    // kprintf("\nreading: %d bytes, fp: %d, size: %d", nbytes, oft[fd].fileptr, oft[fd].in.size);
     kprintf("Read more than the file size\n");
     return SYSERR;
   }
@@ -562,7 +562,7 @@ int fs_write(int fd, void *buf, int nbytes)
   fp += nbytes;
 
   //DEBUG
-  printf("fp: %d\n", fp);
+  // printf("fp: %d\n", fp);
   //fp = 1200
 
   bytes_write = fs_write_all(fd, write_buf, fp);
@@ -572,7 +572,7 @@ int fs_write(int fd, void *buf, int nbytes)
   // fp = oft[fd].fileptr - fp;
 
   //DEBUG INFO
-  kprintf("Bytes rewritten: %d \n", bytes_write);
+  // kprintf("Bytes rewritten: %d \n", bytes_write);
 
   oft[fd].fileptr = fp;
 
