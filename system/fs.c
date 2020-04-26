@@ -238,15 +238,62 @@ void fs_printfreemask(void)
   printf("\n");
 }
 
+int fs_get_entry_index(char *filename)
+{
+  int i;
+  int dir_index = FILENAMELEN + 1;
+
+  for (i = 0; i < DIRECTORY_SIZE; i += 1)
+  {
+    if (strncmp(fsd.root_dir.entry[i].name, filename, FILENAMELEN) == 0)
+    {
+      dir_index = i;
+      break;
+    }
+  }
+
+  if (dir_index > DIRECTORY_SIZE)
+  {
+    kprintf("No such file or directory. \n");
+    return SYSERR;
+  }
+
+  return dir_index;
+}
+
 //return fd
 int fs_open(char *filename, int flags)
 {
-  return SYSERR;
+  int i, fd;
+  int dir_index;
+
+  // find the entry index in root_dir
+  dir_index = fs_get_entry_index(filename);
+  if (dir_index == SYSERR)
+  {
+    return SYSERR;
+  }
+
+  //set the open file table
+  fd = next_open_fd++;
+  oft[fd].state = FSTATE_OPEN;
+  oft[fd].fileptr = 0;
+  oft[fd].flag = flags;
+  oft[fd].de = &fsd.root_dir.entry[dir_index];
+  fs_get_inode_by_num(0, oft[fd].de->inode_num, &oft[fd].in);
+
+  return fd;
 }
 
 int fs_close(int fd)
 {
-  return SYSERR;
+  //TODO: Validity Check
+
+  //write changes of inode into the block
+  fs_put_inode_by_num(0, oft[fd].de->inode_num, &oft[fd].in);
+  oft[fd].state = FSTATE_CLOSED;
+
+  return OK;
 }
 
 int fs_create(char *filename, int mode)
@@ -353,8 +400,8 @@ int fs_read(int fd, void *buf, int nbytes)
   }
 
   memcpy(buf, &read_buf[oft[fd].fileptr], nbytes);
-  oft[fd].fileptr+= nbytes;
-  
+  oft[fd].fileptr += nbytes;
+
   return nbytes;
 }
 
@@ -426,7 +473,43 @@ int fs_write(int fd, void *buf, int nbytes)
 
 int fs_link(char *src_filename, char *dst_filename)
 {
-  return SYSERR;
+  int i;
+  int src_dir_index;
+  int inode_num;
+  int free_dir_index = DIRECTORY_SIZE + 1;
+  struct inode new_inode;
+
+  // find a free dir entry
+  for (i = 0; i < DIRECTORY_SIZE; i += 1)
+  {
+    if (fsd.root_dir.entry[i].inode_num == 0)
+    {
+      free_dir_index = i;
+      break;
+    }
+  }
+  if (free_dir_index > DIRECTORY_SIZE)
+  {
+    kprintf("No free dir entry or inode,\n");
+    return SYSERR;
+  }
+
+  // Get the entry of scr_filename
+  src_dir_index = fs_get_entry_index(src_filename);
+  if (src_dir_index > DIRECTORY_SIZE)
+  {
+    return SYSERR;
+  }
+
+  // setup the new entry
+  inode_num = fsd.root_dir.entry[src_dir_index].inode_num;
+  fsd.root_dir.entry[free_dir_index].inode_num = inode_num;
+  strncpy(fsd.root_dir.entry[free_dir_index].name, fsd.root_dir.entry[src_dir_index].name, FILENAMELEN);
+
+  //inode nlink ++
+  fs_get_inode_by_num(0, inode_num, &new_inode);
+  new_inode.nlink += 1;
+  fs_put_inode_by_num(0, inode_num, &new_inode);
 }
 
 int fs_unlink(char *filename)
