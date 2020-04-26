@@ -520,9 +520,9 @@ int fs_link(char *src_filename, char *dst_filename)
 
 int fs_unlink(char *filename)
 {
-  int dir_index;
+  int i, dir_index, inode_num;
   struct inode inode_current;
-  int inode_num;
+
   dir_index = fs_get_entry_index(filename);
   if (dir_index == SYSERR)
   {
